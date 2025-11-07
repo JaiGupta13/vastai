@@ -232,6 +232,12 @@
             <!-- Scatter Plots -->
             <div class="grid-2">
                 <div class="chart-container">
+                    <h2 class="chart-title">Price per Hour vs DLPerf</h2>
+                    <div class="chart-wrapper">
+                        <canvas id="price-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
                     <h2 class="chart-title">TFLOPS vs DLPerf</h2>
                     <div class="chart-wrapper">
                         <canvas id="tflops-chart"></canvas>
@@ -357,6 +363,7 @@
 
             // Calculate correlations
             const specs = [
+                { key: 'dph_total', label: 'Price per Hour ($)', getValue: d => d.dph_total },
                 { key: 'total_flops', label: 'TFLOPS', getValue: d => d.total_flops },
                 { key: 'gpu_ram', label: 'GPU RAM (MB)', getValue: d => d.gpu_ram },
                 { key: 'gpu_mem_bw', label: 'GPU Memory Bandwidth (GB/s)', getValue: d => d.gpu_mem_bw },
@@ -404,6 +411,7 @@
             });
 
             // Create scatter plots
+            createScatterChart('price-chart', 'Price per Hour ($)', data.map(d => d.dph_total), dlperfValues);
             createScatterChart('tflops-chart', 'TFLOPS', data.map(d => d.total_flops), dlperfValues);
             createScatterChart('gpu-ram-chart', 'GPU RAM (MB)', data.map(d => d.gpu_ram), dlperfValues);
             createScatterChart('gpu-mem-bw-chart', 'GPU Memory Bandwidth (GB/s)', data.map(d => d.gpu_mem_bw), dlperfValues);
