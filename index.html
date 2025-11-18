@@ -175,6 +175,26 @@
             background: #f8f9fb;
         }
 
+        .correlation-table tr.clickable {
+            cursor: pointer;
+        }
+
+        .correlation-table tr.clickable:hover {
+            background: #e0e7ff;
+        }
+
+        .factor-chart-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #667eea;
+        }
+
+        .factor-chart-title {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
         .correlation-value {
             font-weight: 600;
             padding: 4px 10px;
@@ -274,7 +294,7 @@
 
             <div class="chart-container">
                 <h2 class="chart-title">Top Non-GPU Drivers (selected configuration)</h2>
-                <p class="chart-subtitle">Only the requested core metrics (price per hour, CPU RAM, CPU cores/effective cores, CPU clock, and GPU max power) are considered here; each metric drops null, zero, and invalid values before correlation.</p>
+                <p class="chart-subtitle">Only the requested core metrics (price per hour, CPU RAM, CPU cores/effective cores, CPU clock, and GPU max power) are considered here; each metric drops null, zero, and invalid values before correlation. Click on any factor to see its relationship with DLPerf.</p>
                 <table class="correlation-table">
                     <thead>
                         <tr>
@@ -286,16 +306,15 @@
                     </thead>
                     <tbody id="model-correlation-table"></tbody>
                 </table>
+                <div id="factor-chart-container" class="factor-chart-container hidden">
+                    <h3 class="factor-chart-title" id="factor-chart-title"></h3>
+                    <div class="chart-wrapper">
+                        <canvas id="factor-chart"></canvas>
+                    </div>
+                </div>
             </div>
 
             <div class="grid-2">
-                <div class="chart-container">
-                    <h2 class="chart-title">Price per Hour vs DLPerf (within configuration)</h2>
-                    <p class="chart-subtitle">Confirms whether price dispersion within the same GPU model and GPU count reflects measured DLPerf.</p>
-                    <div class="chart-wrapper">
-                        <canvas id="model-price-chart"></canvas>
-                    </div>
-                </div>
                 <div class="chart-container">
                     <h2 class="chart-title">SiliconMark Quickmark vs DLPerf</h2>
                     <p class="chart-subtitle">Benchmark the exact machines you care about (run SiliconMark quickmark and append to quickmark_results.json).</p>
@@ -362,6 +381,8 @@
         let perModelSummaries = {};
         let selectedModel = null;
         let selectedNumGpus = null;
+        let currentDataset = null;
+        let currentCorrelations = null;
         const charts = {};
 
         Promise.all([
@@ -648,10 +669,13 @@
             const compositeKey = `${selectedModel}|${selectedNumGpus}`;
             const summary = perModelSummaries[compositeKey];
             if (!summary) return;
+            currentDataset = summary.dataset;
+            currentCorrelations = summary.correlations;
             updateStatsCards(summary);
             renderModelCorrelationTable(summary.correlations);
-            renderPriceChart(summary.dataset);
             renderQuickmarkChart(summary.quickmarkEntries);
+            // Hide factor chart when switching models
+            document.getElementById('factor-chart-container').classList.add('hidden');
         }
 
         function updateStatsCards(summary) {
@@ -683,6 +707,7 @@
                 const strength = getCorrelationStrength(item.correlation);
                 const direction = item.correlation > 0 ? 'Higher value → higher DLPerf' : 'Higher value → lower DLPerf';
                 const row = document.createElement('tr');
+                row.className = 'clickable';
                 row.innerHTML = `
                     <td>
                         <strong>${item.label}</strong>
@@ -692,30 +717,46 @@
                     <td>${direction}</td>
                     <td>${item.count}</td>
                 `;
+                row.addEventListener('click', () => {
+                    renderFactorChart(item);
+                });
                 tbody.appendChild(row);
             });
         }
 
-        function renderPriceChart(dataset) {
-            const canvasId = 'model-price-chart';
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            const pairs = dataset.reduce((acc, item) => {
-                const rawPrice = item.dph_total;
-                const rawDlperf = item.dlperf;
-                if (rawPrice == null || rawDlperf == null) return acc;
-                const price = typeof rawPrice === 'string' ? Number(rawPrice.trim()) : rawPrice;
-                const dlperf = typeof rawDlperf === 'string' ? Number(String(rawDlperf).trim()) : rawDlperf;
-                if (!Number.isFinite(price) || !Number.isFinite(dlperf)) return acc;
-                if (price === 0) return acc;
-                acc.push({ x: price, y: dlperf });
+        function renderFactorChart(factorItem) {
+            if (!currentDataset) return;
+
+            const spec = NON_GPU_SPECS.find(s => s.key === factorItem.key);
+            if (!spec) return;
+
+            const pairs = currentDataset.reduce((acc, item) => {
+                const rawX = spec.getValue(item);
+                const rawY = item.dlperf;
+                if (rawX == null || rawY == null) return acc;
+                const x = typeof rawX === 'string' ? Number(String(rawX).trim()) : rawX;
+                const y = typeof rawY === 'string' ? Number(String(rawY).trim()) : rawY;
+                if (!Number.isFinite(x) || !Number.isFinite(y)) return acc;
+                if (x === 0) return acc;
+                acc.push({ x, y });
                 return acc;
             }, []);
 
-            const correlation = pairs.length ? calculateCorrelation(pairs.map(p => p.x), pairs.map(p => p.y)) : 0;
+            if (!pairs.length) return;
+
+            const container = document.getElementById('factor-chart-container');
+            const title = document.getElementById('factor-chart-title');
+            const canvasId = 'factor-chart';
+            const canvas = document.getElementById(canvasId);
+            
+            container.classList.remove('hidden');
+            title.textContent = `${factorItem.label} vs DLPerf`;
+
+            const correlation = calculateCorrelation(pairs.map(p => p.x), pairs.map(p => p.y));
 
             if (charts[canvasId]) charts[canvasId].destroy();
 
-            charts[canvasId] = new Chart(ctx, {
+            charts[canvasId] = new Chart(canvas.getContext('2d'), {
                 type: 'scatter',
                 data: {
                     datasets: [{
@@ -731,7 +772,7 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            title: { display: true, text: 'Price per Hour (USD)' }
+                            title: { display: true, text: factorItem.label }
                         },
                         y: {
                             title: { display: true, text: 'DLPerf' }
@@ -740,12 +781,15 @@
                     plugins: {
                         tooltip: {
                             callbacks: {
-                                label: context => `Price: $${context.parsed.x.toFixed(4)}, DLPerf: ${context.parsed.y.toFixed(1)}`
+                                label: context => `${factorItem.label}: ${context.parsed.x.toFixed(2)}, DLPerf: ${context.parsed.y.toFixed(1)}`
                             }
                         }
                     }
                 }
             });
+
+            // Scroll to chart
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         function renderQuickmarkChart(entries) {
