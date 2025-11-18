@@ -120,6 +120,7 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 30px;
+            overflow: visible;
         }
 
         .chart-title {
@@ -139,10 +140,15 @@
         .chart-wrapper {
             position: relative;
             height: 400px;
+            overflow: visible;
         }
 
         .chart-wrapper.tall {
             height: 520px;
+        }
+
+        .chart-wrapper.compact {
+            height: 150px;
         }
 
         .grid-2 {
@@ -289,6 +295,14 @@
                 <div class="stat-card">
                     <div class="stat-label">Quickmark Coverage</div>
                     <div class="stat-value" id="model-quickmark-coverage">-</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h2 class="chart-title">DLPerf Distribution for Selected Configuration</h2>
+                <p class="chart-subtitle">Box plot showing min, Q1, median, Q3, and max DLPerf values</p>
+                <div class="chart-wrapper compact">
+                    <canvas id="dlperf-boxplot"></canvas>
                 </div>
             </div>
 
@@ -546,6 +560,26 @@
             return sortedValues[mid];
         }
 
+        function computeQuartiles(values) {
+            if (!values || !values.length) {
+                return { min: null, q1: null, median: null, q3: null, max: null };
+            }
+            const sorted = [...values].sort((a, b) => a - b);
+            const min = sorted[0];
+            const max = sorted[sorted.length - 1];
+            const med = median(sorted);
+            
+            // Q1 is median of lower half
+            const lowerHalf = sorted.slice(0, Math.floor(sorted.length / 2));
+            const q1 = median(lowerHalf);
+            
+            // Q3 is median of upper half
+            const upperHalf = sorted.slice(Math.ceil(sorted.length / 2));
+            const q3 = median(upperHalf);
+            
+            return { min, q1, median: med, q3, max };
+        }
+
         function computeCorrelations(dataset, specs) {
             const correlations = [];
             specs.forEach(spec => {
@@ -672,6 +706,8 @@
             currentDataset = summary.dataset;
             currentCorrelations = summary.correlations;
             updateStatsCards(summary);
+            const dlperfValues = summary.dataset.map(item => item.dlperf).filter(v => v != null && isFinite(v));
+            renderDLPerfBoxPlot(dlperfValues);
             renderModelCorrelationTable(summary.correlations);
             renderQuickmarkChart(summary.quickmarkEntries);
             // Hide factor chart when switching models
@@ -790,6 +826,152 @@
 
             // Scroll to chart
             container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function renderDLPerfBoxPlot(dlperfValues) {
+            const canvasId = 'dlperf-boxplot';
+            const canvas = document.getElementById(canvasId);
+            
+            if (!dlperfValues || !dlperfValues.length) return;
+            
+            const quartiles = computeQuartiles(dlperfValues);
+            const { min, q1, median, q3, max } = quartiles;
+            
+            if (charts[canvasId]) charts[canvasId].destroy();
+            
+            // Add padding to the scale
+            const range = max - min;
+            const padding = range * 0.05;
+            const scaleMin = Math.max(0, min - padding);
+            const scaleMax = max + padding;
+            
+            // Create horizontal box plot using bar chart with offset
+            charts[canvasId] = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['DLPerf'],
+                    datasets: [
+                        // Offset spacer (invisible)
+                        {
+                            label: '',
+                            data: [min],
+                            backgroundColor: 'rgba(0, 0, 0, 0)',
+                            borderColor: 'rgba(0, 0, 0, 0)',
+                            borderWidth: 0,
+                            stack: 'boxplot',
+                            skipNull: false
+                        },
+                        // Min to Q1 (whisker - thin)
+                        {
+                            label: 'Lower Whisker',
+                            data: [q1 - min],
+                            backgroundColor: 'rgba(99, 102, 241, 0.4)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 1,
+                            stack: 'boxplot',
+                            barThickness: 8
+                        },
+                        // Q1 to Median (IQR lower half)
+                        {
+                            label: 'Q1 to Median',
+                            data: [median - q1],
+                            backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 2,
+                            stack: 'boxplot',
+                            barThickness: 30
+                        },
+                        // Median to Q3 (IQR upper half)
+                        {
+                            label: 'Median to Q3',
+                            data: [q3 - median],
+                            backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 2,
+                            stack: 'boxplot',
+                            barThickness: 30
+                        },
+                        // Q3 to Max (whisker - thin)
+                        {
+                            label: 'Upper Whisker',
+                            data: [max - q3],
+                            backgroundColor: 'rgba(99, 102, 241, 0.4)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 1,
+                            stack: 'boxplot',
+                            barThickness: 8
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            min: scaleMin,
+                            max: scaleMax,
+                            title: { 
+                                display: true, 
+                                text: 'DLPerf Value',
+                                font: { size: 12 }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            display: true,
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            position: 'nearest',
+                            yAlign: 'bottom',
+                            xAlign: 'center',
+                            callbacks: {
+                                title: () => 'DLPerf Distribution',
+                                label: (context) => {
+                                    // Skip the invisible spacer
+                                    if (context.datasetIndex === 0) return null;
+                                    const labels = ['', 'Lower Whisker (Min to Q1)', 'Q1 to Median', 'Median to Q3', 'Upper Whisker (Q3 to Max)'];
+                                    return labels[context.datasetIndex];
+                                },
+                                afterBody: () => {
+                                    return [
+                                        '',
+                                        `Min: ${min.toFixed(1)}`,
+                                        `Q1: ${q1.toFixed(1)}`,
+                                        `Median: ${median.toFixed(1)}`,
+                                        `Q3: ${q3.toFixed(1)}`,
+                                        `Max: ${max.toFixed(1)}`,
+                                        `IQR: ${(q3 - q1).toFixed(1)}`,
+                                        `Range: ${(max - min).toFixed(1)}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 10,
+                            bottom: 10
+                        }
+                    }
+                }
+            });
         }
 
         function renderQuickmarkChart(entries) {
