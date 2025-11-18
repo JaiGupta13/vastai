@@ -235,6 +235,96 @@
             color: #374151;
             line-height: 1.4;
         }
+
+        .analysis-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .analysis-group {
+            border: 1px solid #e0e7ff;
+            border-radius: 12px;
+            padding: 18px;
+            background: #f8f9ff;
+        }
+
+        .analysis-group h3 {
+            color: #4338ca;
+            margin-bottom: 6px;
+        }
+
+        .analysis-note {
+            color: #4b5563;
+            font-size: 0.9em;
+        }
+
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .analysis-table th,
+        .analysis-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .analysis-table th {
+            background: #eef2ff;
+            color: #4338ca;
+            font-weight: 600;
+        }
+
+        .analysis-category-section {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+        }
+
+        .category-block {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.04);
+        }
+
+        .category-block h4 {
+            font-size: 1em;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .category-meta {
+            font-size: 0.85em;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .category-pill {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: #eef2ff;
+            margin-bottom: 6px;
+            font-size: 0.9em;
+            color: #1f2937;
+        }
+
+        .category-pill strong {
+            color: #4338ca;
+        }
+
+        .category-pill span {
+            color: #4b5563;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -254,8 +344,12 @@
                     <label for="gpu-model-select">GPU Model</label>
                     <select id="gpu-model-select" class="gpu-select"></select>
                 </div>
+                <div>
+                    <label for="num-gpus-select">Number of GPUs</label>
+                    <select id="num-gpus-select" class="gpu-select"></select>
+                </div>
                 <p class="control-note">
-                    We first condition on an exact GPU SKU (PCIe vs SXM vs NVL treated separately), then look for factors that vary <em>within</em> that model only.
+                    We condition on both the exact GPU SKU (PCIe vs SXM vs NVL treated separately) <em>and</em> the number of GPUs, then look for factors that vary within that specific configuration only.
                 </p>
             </section>
 
@@ -287,8 +381,8 @@
             </div>
 
             <div class="chart-container">
-                <h2 class="chart-title">Top Non-GPU Drivers (selected model)</h2>
-                <p class="chart-subtitle">Only infrastructure knobs that can vary without changing the GPU model (price, CPU, network, PCIe, NVLink, etc.) are considered here.</p>
+                <h2 class="chart-title">Top Non-GPU Drivers (selected configuration)</h2>
+                <p class="chart-subtitle">Only the requested core metrics (price per hour, CPU RAM, CPU cores/effective cores, CPU clock, and GPU max power) are considered here; each metric drops null, zero, and invalid values before correlation.</p>
                 <table class="correlation-table">
                     <thead>
                         <tr>
@@ -304,8 +398,8 @@
 
             <div class="grid-2">
                 <div class="chart-container">
-                    <h2 class="chart-title">Price per Hour vs DLPerf (within model)</h2>
-                    <p class="chart-subtitle">Confirms whether price dispersion within the same GPU SKU reflects measured DLPerf.</p>
+                    <h2 class="chart-title">Price per Hour vs DLPerf (within configuration)</h2>
+                    <p class="chart-subtitle">Confirms whether price dispersion within the same GPU model and GPU count reflects measured DLPerf.</p>
                     <div class="chart-wrapper">
                         <canvas id="model-price-chart"></canvas>
                     </div>
@@ -322,16 +416,17 @@
                 </div>
             </div>
 
+            <div class="chart-container">
+                <h2 class="chart-title">DLPerf Distribution (datacenter GPUs)</h2>
+                <div class="chart-wrapper">
+                    <canvas id="dlperf-distribution"></canvas>
+                </div>
+            </div>
+
             <div class="grid-2">
                 <div class="chart-container">
-                    <h2 class="chart-title">DLPerf Distribution (datacenter GPUs)</h2>
-                    <div class="chart-wrapper">
-                        <canvas id="dlperf-distribution"></canvas>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <h2 class="chart-title">GPU Model Leaderboard</h2>
-                    <p class="chart-subtitle">Average DLPerf vs median price/hr across datacenter SKUs.</p>
+                    <h2 class="chart-title">GPU Configuration Leaderboard</h2>
+                    <p class="chart-subtitle">Average DLPerf vs median price/hr across datacenter GPU model × GPU count configurations.</p>
                     <div class="chart-wrapper tall">
                         <canvas id="gpu-model-chart"></canvas>
                     </div>
@@ -339,16 +434,16 @@
             </div>
 
             <div class="chart-container">
-                <h2 class="chart-title">Cross-Model Non-GPU Factors</h2>
-                <p class="chart-subtitle">Average absolute correlation across all GPU models (only features unrelated to the GPU silicon).</p>
+                <h2 class="chart-title">Cross-Configuration Non-GPU Factors</h2>
+                <p class="chart-subtitle">Average absolute correlation for the requested fields (price, CPU RAM/cores/clock, GPU max power) across all GPU model × GPU count configurations.</p>
                 <table class="correlation-table">
                     <thead>
                         <tr>
                             <th>Factor</th>
                             <th>Avg |corr|</th>
                             <th>Typical Direction</th>
-                            <th>Strongest Model</th>
-                            <th>GPU Models Covered</th>
+                            <th>Strongest Configuration</th>
+                            <th>Configurations Covered</th>
                         </tr>
                     </thead>
                     <tbody id="cross-model-table"></tbody>
@@ -356,12 +451,20 @@
             </div>
 
             <div class="chart-container">
+                <h2 class="chart-title">Core Metric Analysis (selected config)</h2>
+                <p class="chart-subtitle">
+                    Only CPU RAM, effective CPU cores, price per hour, CPU clock, CPU cores, and GPU max power are summarized here, conditioned on the chosen GPU model and number of GPUs. Each metric filters out null, zero, and invalid values independently before computing stats or correlations versus DLPerf.
+                </p>
+                <div id="global-analysis-sections" class="analysis-section"></div>
+            </div>
+
+            <div class="chart-container">
                 <h2 class="chart-title">Quickmark Coverage</h2>
-                <p class="chart-subtitle">Track how many benchmark runs exist per GPU SKU so we know where more sampling is needed.</p>
+                <p class="chart-subtitle">Track how many benchmark runs exist per GPU configuration so we know where more sampling is needed.</p>
                 <table class="correlation-table">
                     <thead>
                         <tr>
-                            <th>GPU Model</th>
+                            <th>GPU Configuration</th>
                             <th>Quickmark Runs</th>
                             <th>Coverage</th>
                             <th>Avg Quickmark Score</th>
@@ -383,25 +486,36 @@
         const MIN_POINTS_FOR_CORRELATION = 4;
         const NON_GPU_SPECS = [
             { key: 'dph_total', label: 'Price per Hour ($)', description: 'Total hourly list price for the node', getValue: d => d.dph_total },
-            { key: 'num_gpus', label: 'Number of GPUs', description: 'How many identical GPUs are inside the node', getValue: d => d.num_gpus },
-            { key: 'gpu_frac', label: 'GPU Fraction Allocated', description: 'vGPU share vs dedicated card', getValue: d => d.gpu_frac },
+            { key: 'cpu_ram_gb', label: 'CPU RAM (GB)', description: 'System RAM in GB (converted)', getValue: d => d.cpu_ram_gb },
             { key: 'cpu_cores_effective', label: 'Effective CPU Cores', description: 'CPU threads available to the VM', getValue: d => d.cpu_cores_effective },
             { key: 'cpu_ghz', label: 'CPU Clock (GHz)', description: 'Host CPU frequency', getValue: d => d.cpu_ghz },
-            { key: 'cpu_ram_gb', label: 'CPU RAM (GB)', description: 'System RAM in GB (converted)', getValue: d => d.cpu_ram_gb },
-            { key: 'inet_down', label: 'Network Down (Gbps)', description: 'Reported downstream bandwidth', getValue: d => d.inet_down },
-            { key: 'inet_up', label: 'Network Up (Gbps)', description: 'Reported upstream bandwidth', getValue: d => d.inet_up },
-            { key: 'pcie_bw', label: 'PCIe Bandwidth (GB/s)', description: 'PCIe bandwidth reported by the host', getValue: d => d.pcie_bw },
-            { key: 'bw_nvlink', label: 'NVLink Bandwidth (GB/s)', description: 'NVLink fabric capacity if present', getValue: d => d.bw_nvlink },
-            { key: 'disk_bw', label: 'Disk Bandwidth (MB/s)', description: 'Local storage throughput', getValue: d => d.disk_bw },
-            { key: 'reliability', label: 'Reliability Score', description: 'Historical uptime/reliability metric', getValue: d => d.reliability },
-            { key: 'listing_uptime_hours', label: 'Listing Uptime (hrs)', description: 'How long the listing has been continuously up', getValue: d => d.listing_uptime_hours }
+            { key: 'cpu_cores', label: 'CPU Cores', description: 'Reported physical cores', getValue: d => d.cpu_cores },
+            { key: 'gpu_max_power', label: 'GPU Max Power (W)', description: 'Advertised card power budget', getValue: d => d.gpu_max_power }
+        ];
+
+        const GLOBAL_ANALYSIS_GROUPS = [
+            {
+                id: 'core-metrics',
+                title: 'Core Capacity (per GPU model × GPU count)',
+                description: 'Only the requested fields are summarized here. Each metric filters out null, zero, and invalid entries before computing stats or correlations within the selected configuration.',
+                metrics: [
+                    { key: 'dph_total', label: 'Price per Hour', type: 'numeric', unit: '$/hr', decimals: 4, description: 'Total hourly list price for the node', getValue: d => d.dph_total },
+                    { key: 'cpu_ram_gb', label: 'CPU RAM (GB)', type: 'numeric', unit: 'GB', decimals: 1, description: 'System memory assigned to the VM', getValue: d => d.cpu_ram_gb },
+                    { key: 'cpu_cores_effective', label: 'Effective CPU Cores', type: 'numeric', decimals: 0, description: 'vCPU/threads actually exposed to the guest', getValue: d => d.cpu_cores_effective },
+                    { key: 'cpu_ghz', label: 'CPU Clock (GHz)', type: 'numeric', decimals: 2, description: 'Host CPU frequency', getValue: d => d.cpu_ghz },
+                    { key: 'cpu_cores', label: 'CPU Cores', type: 'numeric', decimals: 0, description: 'Reported physical cores', getValue: d => d.cpu_cores },
+                    { key: 'gpu_max_power', label: 'GPU Max Power (W)', type: 'numeric', unit: 'W', decimals: 0, description: 'Advertised card power budget', getValue: d => d.gpu_max_power }
+                ]
+            }
         ];
 
         let datacenterData = [];
         let groupedByModel = {};
+        let groupedByModelAndGpus = {};
         let perModelSummaries = {};
         let aggregatedFactors = [];
         let selectedModel = null;
+        let selectedNumGpus = null;
         const charts = {};
 
         Promise.all([
@@ -429,7 +543,8 @@
             }
 
             groupedByModel = groupBy(datacenterData, item => item.gpu_name);
-            perModelSummaries = buildPerModelSummaries(groupedByModel);
+            groupedByModelAndGpus = groupBy(datacenterData, item => `${item.gpu_name}|${item.num_gpus || 'unknown'}`);
+            perModelSummaries = buildPerModelSummaries(groupedByModelAndGpus);
             aggregatedFactors = buildAggregatedFactors(perModelSummaries);
 
             populateModelSelect(Object.keys(groupedByModel));
@@ -441,8 +556,11 @@
             document.getElementById('loading').style.display = 'none';
             document.getElementById('content').style.display = 'block';
 
-            const select = document.getElementById('gpu-model-select');
-            selectedModel = select.value;
+            const modelSelect = document.getElementById('gpu-model-select');
+            selectedModel = modelSelect.value;
+            updateNumGpusSelect();
+            const numGpusSelect = document.getElementById('num-gpus-select');
+            selectedNumGpus = numGpusSelect.value;
             updateModelView();
         }
 
@@ -518,7 +636,7 @@
                     dataset,
                     count: dataset.length,
                     dlperfStats: computeStats(dlperfValues),
-                    priceStats: computeStats(priceValues),
+                    priceStats: computeStats(priceValues, { skipZero: true }),
                     correlations: computeCorrelations(dataset, NON_GPU_SPECS),
                     quickmarkEntries,
                     quickmarkStats: computeStats(quickmarkEntries.map(entry => entry.score))
@@ -527,8 +645,16 @@
             return summaries;
         }
 
-        function computeStats(values) {
-            const filtered = (values || []).filter(value => value != null && !isNaN(value));
+        function computeStats(values, options = {}) {
+            const { skipZero = false } = options;
+            const filtered = [];
+            (values || []).forEach(raw => {
+                if (raw == null) return;
+                const parsed = typeof raw === 'string' ? Number(raw.trim()) : raw;
+                if (!Number.isFinite(parsed)) return;
+                if (skipZero && parsed === 0) return;
+                filtered.push(parsed);
+            });
             if (!filtered.length) {
                 return { avg: null, median: null, min: null, max: null, std: null, count: 0 };
             }
@@ -558,9 +684,17 @@
         function computeCorrelations(dataset, specs) {
             const correlations = [];
             specs.forEach(spec => {
-                const pairs = dataset
-                    .map(item => ({ x: spec.getValue(item), y: item.dlperf }))
-                    .filter(pair => pair.x != null && pair.y != null && !isNaN(pair.x) && !isNaN(pair.y));
+                const pairs = dataset.reduce((acc, item) => {
+                    const rawX = spec.getValue(item);
+                    const rawY = item.dlperf;
+                    if (rawX == null || rawY == null) return acc;
+                    const x = typeof rawX === 'string' ? Number(String(rawX).trim()) : rawX;
+                    const y = typeof rawY === 'string' ? Number(String(rawY).trim()) : rawY;
+                    if (!Number.isFinite(x) || !Number.isFinite(y)) return acc;
+                    if (x === 0) return acc;
+                    acc.push({ x, y });
+                    return acc;
+                }, []);
 
                 if (pairs.length >= MIN_POINTS_FOR_CORRELATION) {
                     const xValues = pairs.map(pair => pair.x);
@@ -617,6 +751,48 @@
             if (!select.dataset.bound) {
                 select.addEventListener('change', event => {
                     selectedModel = event.target.value;
+                    updateNumGpusSelect();
+                    const numGpusSelect = document.getElementById('num-gpus-select');
+                    selectedNumGpus = numGpusSelect.value;
+                    updateModelView();
+                });
+                select.dataset.bound = 'true';
+            }
+        }
+
+        function updateNumGpusSelect() {
+            const select = document.getElementById('num-gpus-select');
+            select.innerHTML = '';
+            
+            if (!selectedModel) {
+                return;
+            }
+
+            const modelData = groupedByModel[selectedModel] || [];
+            const numGpusCounts = {};
+            modelData.forEach(item => {
+                const numGpus = item.num_gpus || 'unknown';
+                numGpusCounts[numGpus] = (numGpusCounts[numGpus] || 0) + 1;
+            });
+
+            const sortedNumGpus = Object.entries(numGpusCounts)
+                .map(([numGpus, count]) => ({ numGpus, count }))
+                .sort((a, b) => {
+                    const aNum = a.numGpus === 'unknown' ? -1 : Number(a.numGpus);
+                    const bNum = b.numGpus === 'unknown' ? -1 : Number(b.numGpus);
+                    return aNum - bNum;
+                });
+
+            sortedNumGpus.forEach(entry => {
+                const option = document.createElement('option');
+                option.value = entry.numGpus;
+                option.textContent = `${entry.numGpus === 'unknown' ? 'Unknown' : entry.numGpus} GPU${entry.numGpus === 1 ? '' : 's'} (${entry.count})`;
+                select.appendChild(option);
+            });
+
+            if (!select.dataset.bound) {
+                select.addEventListener('change', event => {
+                    selectedNumGpus = event.target.value;
                     updateModelView();
                 });
                 select.dataset.bound = 'true';
@@ -624,12 +800,15 @@
         }
 
         function updateModelView() {
-            if (!selectedModel || !perModelSummaries[selectedModel]) return;
-            const summary = perModelSummaries[selectedModel];
+            if (!selectedModel || selectedNumGpus === null) return;
+            const compositeKey = `${selectedModel}|${selectedNumGpus}`;
+            const summary = perModelSummaries[compositeKey];
+            if (!summary) return;
             updateStatsCards(summary);
             renderModelCorrelationTable(summary.correlations);
             renderPriceChart(summary.dataset);
             renderQuickmarkChart(summary.quickmarkEntries);
+            renderGlobalAnalysis(buildGlobalAnalysis(summary.dataset));
             updateInsights(summary);
         }
 
@@ -678,9 +857,17 @@
         function renderPriceChart(dataset) {
             const canvasId = 'model-price-chart';
             const ctx = document.getElementById(canvasId).getContext('2d');
-            const pairs = dataset
-                .map(item => ({ x: item.dph_total, y: item.dlperf }))
-                .filter(point => point.x != null && point.y != null && !isNaN(point.x) && !isNaN(point.y));
+            const pairs = dataset.reduce((acc, item) => {
+                const rawPrice = item.dph_total;
+                const rawDlperf = item.dlperf;
+                if (rawPrice == null || rawDlperf == null) return acc;
+                const price = typeof rawPrice === 'string' ? Number(rawPrice.trim()) : rawPrice;
+                const dlperf = typeof rawDlperf === 'string' ? Number(String(rawDlperf).trim()) : rawDlperf;
+                if (!Number.isFinite(price) || !Number.isFinite(dlperf)) return acc;
+                if (price === 0) return acc;
+                acc.push({ x: price, y: dlperf });
+                return acc;
+            }, []);
 
             const correlation = pairs.length ? calculateCorrelation(pairs.map(p => p.x), pairs.map(p => p.y)) : 0;
 
@@ -847,12 +1034,15 @@
             const canvasId = 'gpu-model-chart';
             const ctx = document.getElementById(canvasId).getContext('2d');
             const rows = Object.entries(perModelSummaries)
-                .map(([model, summary]) => ({
-                    model,
-                    avgDlperf: summary.dlperfStats.avg || 0,
-                    medianPrice: summary.priceStats.median || 0,
-                    count: summary.count
-                }))
+                .map(([key, summary]) => {
+                    const [model, numGpus] = key.split('|');
+                    return {
+                        label: `${model} × ${numGpus === 'unknown' ? '?' : numGpus} GPU${numGpus === 1 ? '' : 's'}`,
+                        avgDlperf: summary.dlperfStats.avg || 0,
+                        medianPrice: summary.priceStats.median || 0,
+                        count: summary.count
+                    };
+                })
                 .sort((a, b) => b.avgDlperf - a.avgDlperf);
 
             if (!rows.length) return;
@@ -861,7 +1051,7 @@
             charts[canvasId] = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: rows.map(row => row.model),
+                    labels: rows.map(row => row.label),
                     datasets: [{
                         label: 'Avg DLPerf',
                         data: rows.map(row => row.avgDlperf),
@@ -948,6 +1138,9 @@
                         ? 'Higher value → lower DLPerf'
                         : 'Mixed';
 
+                const [strongestModel, strongestNumGpus] = factor.strongestModel.model.split('|');
+                const strongestLabel = `${strongestModel} × ${strongestNumGpus === 'unknown' ? '?' : strongestNumGpus} GPU${strongestNumGpus === 1 ? '' : 's'}`;
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
@@ -956,8 +1149,8 @@
                     </td>
                     <td>${factor.avgAbsCorrelation.toFixed(3)}</td>
                     <td>${direction}</td>
-                    <td>${factor.strongestModel.model} (${factor.strongestModel.correlation > 0 ? '+' : ''}${factor.strongestModel.correlation.toFixed(3)})</td>
-                    <td>${factor.coverage} models</td>
+                    <td>${strongestLabel} (${factor.strongestModel.correlation > 0 ? '+' : ''}${factor.strongestModel.correlation.toFixed(3)})</td>
+                    <td>${factor.coverage} configs</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -968,12 +1161,17 @@
             tbody.innerHTML = '';
 
             const rows = Object.entries(summaries)
-                .map(([model, summary]) => ({
-                    model,
-                    runs: summary.quickmarkEntries.length,
-                    total: summary.count,
-                    avgScore: summary.quickmarkStats.avg
-                }))
+                .map(([key, summary]) => {
+                    const [model, numGpus] = key.split('|');
+                    return {
+                        model,
+                        numGpus,
+                        label: `${model} × ${numGpus === 'unknown' ? '?' : numGpus} GPU${numGpus === 1 ? '' : 's'}`,
+                        runs: summary.quickmarkEntries.length,
+                        total: summary.count,
+                        avgScore: summary.quickmarkStats.avg
+                    };
+                })
                 .sort((a, b) => b.runs - a.runs);
 
             rows.forEach(row => {
@@ -981,7 +1179,7 @@
                 const displayScore = row.runs ? formatNumber(row.avgScore) : '—';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${row.model}</td>
+                    <td>${row.label}</td>
                     <td>${row.runs}</td>
                     <td>${row.runs}/${row.total} (${coverage})</td>
                     <td>${displayScore}</td>
@@ -996,15 +1194,258 @@
             }
         }
 
+        function buildGlobalAnalysis(dataset) {
+            const total = dataset.length;
+            return GLOBAL_ANALYSIS_GROUPS.map(group => {
+                const numericResults = group.metrics
+                    .filter(metric => metric.type === 'numeric')
+                    .map(metric => computeNumericAnalysis(metric, dataset, total));
+                const categoricalResults = group.metrics
+                    .filter(metric => metric.type === 'categorical')
+                    .map(metric => computeCategoricalAnalysis(metric, dataset));
+                return {
+                    ...group,
+                    numericResults,
+                    categoricalResults
+                };
+            });
+        }
+
+        function computeNumericAnalysis(metric, dataset, totalCount) {
+            const points = [];
+            dataset.forEach(item => {
+                let value = metric.getValue ? metric.getValue(item) : item[metric.key];
+                if (value == null) return;
+                if (typeof value === 'string') {
+                    const trimmed = value.trim();
+                    if (!trimmed) return;
+                    value = Number(trimmed);
+                }
+                if (typeof value !== 'number' || Number.isNaN(value) || !Number.isFinite(value)) return;
+                const skipZero = metric.skipZero !== false;
+                if (skipZero && value === 0) return;
+                points.push({ value, dlperf: item.dlperf });
+            });
+
+            const stats = computeExtendedStats(points.map(point => point.value));
+            const correlation = (metric.correlate === false || points.length < MIN_POINTS_FOR_CORRELATION)
+                ? null
+                : calculateCorrelation(points.map(point => point.value), points.map(point => point.dlperf));
+
+            return {
+                key: metric.key,
+                label: metric.label,
+                description: metric.description || '',
+                unit: metric.unit || '',
+                decimals: metric.decimals != null ? metric.decimals : 1,
+                samples: points.length,
+                coverage: totalCount ? points.length / totalCount : 0,
+                stats,
+                correlation
+            };
+        }
+
+        function computeExtendedStats(values) {
+            const filtered = (values || []).filter(value => value != null && !Number.isNaN(value));
+            if (!filtered.length) return null;
+            const sorted = filtered.slice().sort((a, b) => a - b);
+            const sum = filtered.reduce((acc, value) => acc + value, 0);
+            return {
+                min: sorted[0],
+                max: sorted[sorted.length - 1],
+                median: median(sorted),
+                avg: sum / filtered.length,
+                p25: percentile(sorted, 0.25),
+                p75: percentile(sorted, 0.75)
+            };
+        }
+
+        function percentile(sortedValues, percentileFraction) {
+            if (!sortedValues.length) return null;
+            const index = (sortedValues.length - 1) * percentileFraction;
+            const lower = Math.floor(index);
+            const upper = Math.ceil(index);
+            if (lower === upper) return sortedValues[lower];
+            const weight = index - lower;
+            return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
+        }
+
+        function computeCategoricalAnalysis(metric, dataset) {
+            const counts = new Map();
+            dataset.forEach(item => {
+                const raw = metric.getValue ? metric.getValue(item) : item[metric.key];
+                const normalized = normalizeCategoricalValue(raw);
+                if (normalized === null) return;
+                const key = typeof normalized === 'object' ? JSON.stringify(normalized) : String(normalized);
+                if (!counts.has(key)) {
+                    const display = metric.formatCategory
+                        ? metric.formatCategory(normalized)
+                        : String(normalized);
+                    counts.set(key, { label: display, count: 0, dlperfs: [] });
+                }
+                const entry = counts.get(key);
+                entry.count += 1;
+                if (item.dlperf != null && !Number.isNaN(item.dlperf)) {
+                    entry.dlperfs.push(item.dlperf);
+                }
+            });
+
+            const totalSamples = Array.from(counts.values()).reduce((sum, entry) => sum + entry.count, 0);
+            const topValues = Array.from(counts.values())
+                .map(entry => ({
+                    label: entry.label,
+                    count: entry.count,
+                    share: totalSamples ? entry.count / totalSamples : 0,
+                    avgDlperf: entry.dlperfs.length
+                        ? entry.dlperfs.reduce((acc, value) => acc + value, 0) / entry.dlperfs.length
+                        : null
+                }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, metric.topN || 5);
+
+            return {
+                key: metric.key,
+                label: metric.label,
+                description: metric.description || '',
+                samples: totalSamples,
+                uniqueCount: counts.size,
+                topValues
+            };
+        }
+
+        function normalizeCategoricalValue(value) {
+            if (value == null) return null;
+            if (typeof value === 'string') {
+                const trimmed = value.trim();
+                return trimmed || 'Unknown';
+            }
+            if (typeof value === 'boolean' || typeof value === 'number') {
+                return value;
+            }
+            return String(value);
+        }
+
+        function renderGlobalAnalysis(groups) {
+            const container = document.getElementById('global-analysis-sections');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (!groups.length) {
+                container.innerHTML = '<div class="analysis-note">Analysis not available. Load offers.json first.</div>';
+                return;
+            }
+
+            groups.forEach(group => {
+                const section = document.createElement('div');
+                section.className = 'analysis-group';
+                section.innerHTML = `
+                    <h3>${group.title}</h3>
+                    <p class="analysis-note">${group.description}</p>
+                `;
+
+                if (group.numericResults.length) {
+                    const table = document.createElement('table');
+                    table.className = 'analysis-table';
+                    const rows = group.numericResults.map(result => {
+                        const stats = result.stats;
+                        const coverageText = result.samples
+                            ? `${result.samples.toLocaleString()} (${(result.coverage * 100).toFixed(0)}%)`
+                            : '0';
+                        const medianText = stats ? appendUnit(formatNumber(stats.median, result.decimals), result.unit) : '—';
+                        const meanText = stats ? appendUnit(formatNumber(stats.avg, result.decimals), result.unit) : '—';
+                        const rangeText = stats
+                            ? `${appendUnit(formatNumber(stats.min, result.decimals), result.unit)} → ${appendUnit(formatNumber(stats.max, result.decimals), result.unit)}`
+                            : '—';
+                        const corrText = renderCorrelationPill(result.correlation);
+                        return `
+                            <tr>
+                                <td>
+                                    <strong>${result.label}</strong>
+                                    <div style="color:#6b7280;font-size:0.85em;">${result.description}</div>
+                                </td>
+                                <td>${coverageText}</td>
+                                <td>${medianText}</td>
+                                <td>${meanText}</td>
+                                <td>${rangeText}</td>
+                                <td>${corrText}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Valid samples</th>
+                                <th>Median</th>
+                                <th>Mean</th>
+                                <th>Min → Max</th>
+                                <th>Correlation</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    `;
+                    section.appendChild(table);
+                }
+
+                if (group.categoricalResults.length) {
+                    const categorySection = document.createElement('div');
+                    categorySection.className = 'analysis-category-section';
+                    group.categoricalResults.forEach(result => {
+                        const block = document.createElement('div');
+                        block.className = 'category-block';
+                        const meta = result.samples
+                            ? `${result.samples.toLocaleString()} samples · ${result.uniqueCount} unique`
+                            : 'No populated data yet';
+                        const items = result.topValues.length
+                            ? result.topValues.map(entry => {
+                                const percent = `${(entry.share * 100).toFixed(1)}%`;
+                                return `
+                                    <div class="category-pill">
+                                        <div>
+                                            <strong>${entry.label}</strong>
+                                            <span>${entry.count.toLocaleString()} (${percent})</span>
+                                        </div>
+                                        <span>Avg DLPerf ${formatNumber(entry.avgDlperf)}</span>
+                                    </div>
+                                `;
+                            }).join('')
+                            : '<div class="category-pill"><div>No populated values.</div></div>';
+
+                        block.innerHTML = `
+                            <h4>${result.label}</h4>
+                            <div class="category-meta">${result.description} · ${meta}</div>
+                            ${items}
+                        `;
+                        categorySection.appendChild(block);
+                    });
+                    section.appendChild(categorySection);
+                }
+
+                container.appendChild(section);
+            });
+        }
+
+        function appendUnit(value, unit) {
+            if (value === '—' || !unit) return value;
+            return `${value} ${unit}`;
+        }
+
+        function renderCorrelationPill(value) {
+            if (value == null) return '—';
+            const strength = getCorrelationStrength(value);
+            return `<span class="correlation-value ${strength.class}">${value > 0 ? '+' : ''}${value.toFixed(3)}</span>`;
+        }
+
         function updateInsights(summary) {
             const container = document.getElementById('insights-content');
             const insights = [];
 
             const dlperfStats = summary.dlperfStats;
+            const configLabel = `${selectedModel} × ${selectedNumGpus === 'unknown' ? '?' : selectedNumGpus} GPU${selectedNumGpus === 1 ? '' : 's'}`;
             insights.push(`
                 <div class="insight-item">
-                    <strong>${selectedModel}</strong> spans DLPerf ${formatNumber(dlperfStats.min)} to ${formatNumber(dlperfStats.max)} (std dev ${formatNumber(dlperfStats.std)}).
-                    All findings below compare only machines that keep this GPU constant.
+                    <strong>${configLabel}</strong> spans DLPerf ${formatNumber(dlperfStats.min)} to ${formatNumber(dlperfStats.max)} (std dev ${formatNumber(dlperfStats.std)}).
+                    All findings below compare only machines that keep both the GPU model and number of GPUs constant.
                 </div>
             `);
 
@@ -1026,8 +1467,8 @@
                 const direction = priceCorr.correlation < 0 ? 'cheaper nodes deliver higher DLPerf' : 'higher prices track higher DLPerf';
                 insights.push(`
                     <div class="insight-item">
-                        <strong>Price discipline (${selectedModel}):</strong> correlation ${priceCorr.correlation.toFixed(2)} → ${direction}.
-                        We only compare listings that share the same GPU SKU.
+                        <strong>Price discipline (${configLabel}):</strong> correlation ${priceCorr.correlation.toFixed(2)} → ${direction}.
+                        We only compare listings that share the same GPU model and GPU count.
                     </div>
                 `);
             }
@@ -1037,7 +1478,7 @@
                     .map(f => `${f.label} (${f.avgAbsCorrelation.toFixed(2)} avg |corr|)`).join(', ');
                 insights.push(`
                     <div class="insight-item">
-                        <strong>Cross-model agreement:</strong> ${crossHighlights} consistently explain DLPerf swings across datacenter GPUs without touching VRAM, TFLOPS, or other baked-in specs.
+                        <strong>Cross-configuration agreement:</strong> ${crossHighlights} consistently explain DLPerf swings across datacenter GPU configurations without touching VRAM, TFLOPS, GPU count, or other baked-in specs.
                     </div>
                 `);
             }
@@ -1053,7 +1494,7 @@
             } else {
                 insights.push(`
                     <div class="insight-item">
-                        <strong>Action:</strong> run SiliconMark quickmark on representative ${selectedModel} hosts (rent → benchmark → terminate) and drop the JSON into <code>quickmark_results.json</code> so the scatter plot/coverage fill in.
+                        <strong>Action:</strong> run SiliconMark quickmark on representative ${configLabel} hosts (rent → benchmark → terminate) and drop the JSON into <code>quickmark_results.json</code> so the scatter plot/coverage fill in.
                     </div>
                 `);
             }
