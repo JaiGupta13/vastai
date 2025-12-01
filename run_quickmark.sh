@@ -234,10 +234,10 @@ ONSTART_EOF
 )
 
 log_info "Creating instance from offer $OFFER_ID..."
-log_info "Using image: pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime"
+log_info "Using image: vastai/pytorch"
 
 CREATE_OUTPUT=$(vast create instance "$OFFER_ID" \
-    --image "pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime" \
+    --image "vastai/pytorch" \
     --disk 20 \
     --ssh \
     --direct \
