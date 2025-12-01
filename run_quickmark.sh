@@ -224,6 +224,9 @@ apt-get install -y libgpgme11 wget
 # Install pynvml (might already be present)
 pip3 install pynvml || true
 
+# Install torch
+pip3 install torch || true
+
 # Download SiliconMark agent
 cd /workspace
 wget -q -O ./agent https://downloads.silicondata.com/agent
