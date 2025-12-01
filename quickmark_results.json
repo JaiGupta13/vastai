@@ -1,0 +1,45 @@
+[
+  {
+    "machine_id": 47690,
+    "quickmark_score": 265.71,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-01T19:07:03.755756Z",
+    "gpu_model": "NVIDIA A100-SXM4-40GB",
+    "gpu_count": 1,
+    "notes": "First benchmark run for DLPerf correlation study",
+    "siliconmark_job_id": "1995569441764679680",
+    "siliconmark_run_id": "1995570037133549568",
+    "aggregate_results": {
+      "bf16_tflops": 265.71,
+      "fp16_tflops": 260.44,
+      "fp32_tflops": 123.87,
+      "fp32_cuda_core_tflops": 19.07,
+      "mixed_precision_tflops": 245.55,
+      "memory_bandwidth_gbs": 1380.73,
+      "l2_bandwidth_gbs": 282.13,
+      "host_to_device_bandwidth_gbs": 25.02,
+      "device_to_host_bandwidth_gbs": 23.83,
+      "kernel_launch_overhead_us": 9.47,
+      "power_consumption_watts": 404.34,
+      "temperature_centigrade": 75
+    },
+    "inventory": {
+      "cpu": "AMD EPYC 7532 32-Core Processor",
+      "cpu_cores": 64,
+      "ram_gb": 1007,
+      "disk_model": "MZXLR960HBHQ-000H3",
+      "disk_size_gb": 894,
+      "cuda_version": "13.0",
+      "driver_version": "580.95.05",
+      "location": "US",
+      "download_speed_mbps": 1883,
+      "upload_speed_mbps": 2197
+    },
+    "manufacturer_spec": {
+      "bandwidth_gbs": 1560.0,
+      "fp16_tflops": 77.97,
+      "fp32_tflops": 19.49
+    }
+  }
+]
+

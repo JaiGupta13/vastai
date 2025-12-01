@@ -322,6 +322,10 @@
         <div id="content" style="display: none;">
             <section class="controls-panel">
                 <div>
+                    <label for="json-file-select">Data File</label>
+                    <select id="json-file-select" class="gpu-select"></select>
+                </div>
+                <div>
                     <label for="gpu-model-select">GPU Model</label>
                     <select id="gpu-model-select" class="gpu-select"></select>
                 </div>
@@ -459,18 +463,185 @@
         let currentDataset = null;
         let currentCorrelations = null;
         const charts = {};
+        let availableJsonFiles = [];
+        let selectedJsonFile = 'offers.json';
 
-        Promise.all([
-            fetch('offers.json').then(res => res.json()),
-            fetch('quickmark_results.json').then(res => res.ok ? res.json() : []).catch(() => [])
-        ])
-            .then(([offers, quickmarks]) => {
-                initializeDashboard(offers, quickmarks || []);
-            })
-            .catch(error => {
-                console.error('Error loading data:', error);
-                document.getElementById('loading').innerHTML = 'Error loading data. Ensure offers.json and quickmark_results.json exist.';
+        // Discover JSON files in the directory
+        async function discoverJsonFiles() {
+            const discoveredFiles = new Set();
+            
+            // First, try to fetch a manifest file that lists available JSON files
+            try {
+                const manifestResponse = await fetch('files.json');
+                if (manifestResponse.ok) {
+                    const manifest = await manifestResponse.json();
+                    if (Array.isArray(manifest.files)) {
+                        manifest.files.forEach(file => {
+                            if (file.endsWith('.json') && file !== 'quickmark_results.json' && file !== 'files.json') {
+                                discoveredFiles.add(file);
+                            }
+                        });
+                    }
+                }
+            } catch (e) {
+                // No manifest file, continue with pattern discovery
+            }
+            
+            // Common known patterns
+            const commonPatterns = [
+                'offers.json',
+                'offers_old.json',
+                'offers-12-01-25.json'
+            ];
+            
+            // Try common patterns
+            for (const pattern of commonPatterns) {
+                try {
+                    let response = await fetch(pattern, { method: 'HEAD' });
+                    // If HEAD fails, try GET with range to check file existence
+                    if (!response.ok) {
+                        response = await fetch(pattern, { 
+                            headers: { 'Range': 'bytes=0-0' }
+                        });
+                    }
+                    if (response.ok || response.status === 206) {
+                        discoveredFiles.add(pattern);
+                    }
+                } catch (e) {
+                    // File doesn't exist or can't be checked
+                }
+            }
+            
+            // Try date-based patterns for recent files (last 30 days)
+            const currentDate = new Date();
+            for (let daysAgo = 0; daysAgo < 30; daysAgo++) {
+                const checkDate = new Date(currentDate);
+                checkDate.setDate(checkDate.getDate() - daysAgo);
+                const year = checkDate.getFullYear();
+                const month = String(checkDate.getMonth() + 1).padStart(2, '0');
+                const day = String(checkDate.getDate()).padStart(2, '0');
+                const yearShort = String(year).slice(-2);
+                
+                const datePatterns = [
+                    `offers-${year}-${month}-${day}.json`,
+                    `offers-${month}-${day}-${yearShort}.json`,
+                    `offers_${year}${month}${day}.json`,
+                    `offers-${yearShort}-${month}-${day}.json`
+                ];
+                
+                for (const pattern of datePatterns) {
+                    if (!discoveredFiles.has(pattern)) {
+                        try {
+                            let response = await fetch(pattern, { method: 'HEAD' });
+                            if (!response.ok) {
+                                response = await fetch(pattern, { 
+                                    headers: { 'Range': 'bytes=0-0' }
+                                });
+                            }
+                            if (response.ok || response.status === 206) {
+                                discoveredFiles.add(pattern);
+                            }
+                        } catch (e) {
+                            // File doesn't exist
+                        }
+                    }
+                }
+            }
+            
+            // Try numbered patterns (offers-1.json, offers-2.json, etc.)
+            for (let i = 1; i <= 10; i++) {
+                const pattern = `offers-${i}.json`;
+                if (!discoveredFiles.has(pattern)) {
+                    try {
+                        let response = await fetch(pattern, { method: 'HEAD' });
+                        if (!response.ok) {
+                            response = await fetch(pattern, { 
+                                headers: { 'Range': 'bytes=0-0' }
+                            });
+                        }
+                        if (response.ok || response.status === 206) {
+                            discoveredFiles.add(pattern);
+                        }
+                    } catch (e) {
+                        // File doesn't exist
+                    }
+                }
+            }
+            
+            // If no files found, default to offers.json (will show error if it doesn't exist)
+            if (discoveredFiles.size === 0) {
+                discoveredFiles.add('offers.json');
+            }
+            
+            return Array.from(discoveredFiles).sort();
+        }
+
+        // Populate JSON file selector
+        function populateJsonFileSelect(files) {
+            const select = document.getElementById('json-file-select');
+            select.innerHTML = '';
+            
+            files.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file;
+                option.textContent = file;
+                if (file === selectedJsonFile) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
             });
+            
+            if (!select.dataset.bound) {
+                select.addEventListener('change', async (event) => {
+                    selectedJsonFile = event.target.value;
+                    await loadDataFile(selectedJsonFile);
+                });
+                select.dataset.bound = 'true';
+            }
+        }
+
+        // Load data from selected JSON file
+        async function loadDataFile(filename) {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('loading').innerHTML = `Loading ${filename} and recomputing per-model correlations...`;
+            
+            try {
+                const [offers, quickmarks] = await Promise.all([
+                    fetch(filename).then(res => {
+                        if (!res.ok) throw new Error(`Failed to load ${filename}`);
+                        return res.json();
+                    }),
+                    fetch('quickmark_results.json').then(res => res.ok ? res.json() : []).catch(() => [])
+                ]);
+                
+                initializeDashboard(offers, quickmarks || []);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').innerHTML = `Error loading ${filename}. Please ensure the file exists.`;
+            }
+        }
+
+        // Initialize: discover JSON files and load default
+        (async () => {
+            try {
+                availableJsonFiles = await discoverJsonFiles();
+                populateJsonFileSelect(availableJsonFiles);
+                
+                // Load the selected file (or default to first available)
+                if (availableJsonFiles.includes(selectedJsonFile)) {
+                    await loadDataFile(selectedJsonFile);
+                } else if (availableJsonFiles.length > 0) {
+                    selectedJsonFile = availableJsonFiles[0];
+                    await loadDataFile(selectedJsonFile);
+                } else {
+                    document.getElementById('loading').innerHTML = 'No JSON data files found.';
+                }
+            } catch (error) {
+                console.error('Error initializing:', error);
+                document.getElementById('loading').innerHTML = 'Error discovering JSON files.';
+            }
+        })();
 
         function initializeDashboard(offers, quickmarks) {
             const quickmarkMap = buildQuickmarkMap(quickmarks);
