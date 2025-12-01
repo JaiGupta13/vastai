@@ -1,11 +1,13 @@
 [
   {
     "machine_id": 47690,
+    "host_id": 195410,
     "quickmark_score": 265.71,
     "score_metric": "bf16_tflops",
     "measured_at": "2025-12-01T19:07:03.755756Z",
     "gpu_model": "NVIDIA A100-SXM4-40GB",
     "gpu_count": 1,
+    "dlperf_at_benchmark": 95.38,
     "notes": "First benchmark run for DLPerf correlation study",
     "siliconmark_job_id": "1995569441764679680",
     "siliconmark_run_id": "1995570037133549568",
