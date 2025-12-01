@@ -295,30 +295,46 @@ if [[ $WAITED -ge $MAX_WAIT ]]; then
     exit 1
 fi
 
-# Wait a bit more for onstart script to complete
-log_info "Waiting 2 minutes for onstart script to complete..."
-log_info "Press any key to skip the wait and proceed immediately"
+# Wait for onstart script to complete by checking logs
+log_info "Waiting for onstart script to complete..."
+log_info "Monitoring logs for 'Setup Complete' message..."
 
-WAIT_TIME=120  # 2 minutes
-REMAINING=$WAIT_TIME
+MAX_WAIT=300  # 5 minutes max wait
+WAITED=0
+POLL_INTERVAL=5
 
-while [[ $REMAINING -gt 0 ]]; do
-    # Display countdown with carriage return to overwrite line
-    printf "\r  ${YELLOW}Time remaining: ${REMAINING}s${NC} (Press any key to skip)    "
+while [[ $WAITED -lt $MAX_WAIT ]]; do
+    # Check logs for "Setup Complete"
+    LOGS=$(vast logs "$INSTANCE_ID" 2>/dev/null || echo "")
     
-    # Try to read a key with 1 second timeout
-    if read -rsn1 -t 1 key 2>/dev/null; then
+    # Show the last line of logs
+    LAST_LINE=$(echo "$LOGS" | tail -1)
+    if [[ -n "$LAST_LINE" ]]; then
+        # Clear line and show last log
+        printf "\r\033[K  ${CYAN}Last log:${NC} $LAST_LINE${NC}    "
+    else
+        printf "\r\033[K  ${YELLOW}Waiting for logs... (${WAITED}s / ${MAX_WAIT}s)${NC}    "
+    fi
+    
+    if echo "$LOGS" | grep -q "Setup Complete"; then
         echo ""
-        log_info "Wait skipped by user"
+        log_success "Setup complete detected in logs!"
         break
     fi
     
-    REMAINING=$((REMAINING - 1))
+    sleep $POLL_INTERVAL
+    WAITED=$((WAITED + POLL_INTERVAL))
 done
 
-if [[ $REMAINING -eq 0 ]]; then
-    echo ""
-    log_success "Wait period completed"
+echo ""
+
+if [[ $WAITED -ge $MAX_WAIT ]]; then
+    log_warn "Timeout waiting for 'Setup Complete' in logs"
+    log_info "Showing recent logs:"
+    vast logs "$INSTANCE_ID" 2>/dev/null | tail -50 || true
+    log_warn "Proceeding anyway - setup may still be in progress"
+else
+    log_success "Setup completed successfully"
 fi
 
 # ============================================================================
