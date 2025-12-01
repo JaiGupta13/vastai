@@ -42,6 +42,50 @@
       "fp16_tflops": 77.97,
       "fp32_tflops": 19.49
     }
+  },
+  {
+    "machine_id": null,
+    "host_id": null,
+    "quickmark_score": 720.27,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-01T23:06:24.552517Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": null,
+    "notes": null,
+    "siliconmark_job_id": "1995629767495393280",
+    "siliconmark_run_id": "1995630394711613440",
+    "aggregate_results": {
+      "bf16_tflops": 720.27,
+      "fp16_tflops": 677,
+      "fp32_tflops": 365.81,
+      "fp32_cuda_core_tflops": 53.07,
+      "mixed_precision_tflops": 641.35,
+      "memory_bandwidth_gbs": 3020.6,
+      "l2_bandwidth_gbs": 427.64,
+      "host_to_device_bandwidth_gbs": 27.69,
+      "device_to_host_bandwidth_gbs": 28.59,
+      "kernel_launch_overhead_us": 5.83,
+      "power_consumption_watts": 651.07,
+      "temperature_centigrade": 60
+    },
+    "inventory": {
+      "cpu": "Intel(R) Xeon(R) Platinum 8481C CPU @ 2.70GHz",
+      "cpu_cores": 104,
+      "ram_gb": 1842,
+      "disk_model": "nvme_card-pd",
+      "disk_size_gb": 6042,
+      "cuda_version": "13.0",
+      "driver_version": "580.95.05",
+      "location": "US",
+      "download_speed_mbps": 5174,
+      "upload_speed_mbps": 5816
+    },
+    "manufacturer_spec": {
+      "bandwidth_gbs": 3360.0,
+      "fp16_tflops": 267.60,
+      "fp32_tflops": 66.91
+    }
   }
 ]
 

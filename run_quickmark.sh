@@ -241,9 +241,9 @@ log_info "Using image: vastai/pytorch"
 
 CREATE_OUTPUT=$(vast create instance "$OFFER_ID" \
     --image "vastai/pytorch" \
-    --disk 20 \
     --ssh \
     --direct \
+    --disk 20 \
     --onstart-cmd "$ONSTART_SCRIPT" \
     --label "quickmark-$MACHINE_ID" \
     --raw 2>&1) || {
@@ -296,8 +296,30 @@ if [[ $WAITED -ge $MAX_WAIT ]]; then
 fi
 
 # Wait a bit more for onstart script to complete
-log_info "Waiting 30s for onstart script to complete..."
-sleep 30
+log_info "Waiting 2 minutes for onstart script to complete..."
+log_info "Press any key to skip the wait and proceed immediately"
+
+WAIT_TIME=120  # 2 minutes
+REMAINING=$WAIT_TIME
+
+while [[ $REMAINING -gt 0 ]]; do
+    # Display countdown with carriage return to overwrite line
+    printf "\r  ${YELLOW}Time remaining: ${REMAINING}s${NC} (Press any key to skip)    "
+    
+    # Try to read a key with 1 second timeout
+    if read -rsn1 -t 1 key 2>/dev/null; then
+        echo ""
+        log_info "Wait skipped by user"
+        break
+    fi
+    
+    REMAINING=$((REMAINING - 1))
+done
+
+if [[ $REMAINING -eq 0 ]]; then
+    echo ""
+    log_success "Wait period completed"
+fi
 
 # ============================================================================
 # Step 6: Get SSH Connection Details
