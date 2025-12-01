@@ -183,10 +183,73 @@
 
         .correlation-table tr.clickable {
             cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .correlation-table tr.clickable:hover {
-            background: #e0e7ff;
+            background: linear-gradient(90deg, #e0e7ff 0%, #f0f4ff 100%);
+            transform: scale(1.005);
+        }
+
+        .correlation-table tr.clickable td:first-child {
+            position: relative;
+        }
+
+        .click-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75em;
+            color: #818cf8;
+            margin-top: 4px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .click-hint svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .correlation-table tr.clickable:hover .click-hint {
+            opacity: 1;
+            color: #6366f1;
+        }
+
+        .chart-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            border-radius: 6px;
+            margin-right: 10px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .chart-icon svg {
+            width: 14px;
+            height: 14px;
+            color: #6366f1;
+        }
+
+        .correlation-table tr.clickable:hover .chart-icon {
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+        }
+
+        .correlation-table tr.clickable:hover .chart-icon svg {
+            color: white;
+        }
+
+        .factor-cell {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .factor-content {
+            flex: 1;
         }
 
         .factor-chart-container {
@@ -304,7 +367,7 @@
 
             <div class="chart-container">
                 <h2 class="chart-title">Top Non-GPU Drivers (selected model)</h2>
-                <p class="chart-subtitle">Per-GPU metrics (price, RAM, CPU cores are divided by GPU count). Click on any factor to see its relationship with per-GPU DLPerf.</p>
+                <p class="chart-subtitle">Per-GPU metrics (price, RAM, CPU cores are divided by GPU count). <strong style="color: #6366f1;">👆 Click any row below to visualize it as a scatter plot!</strong></p>
                 <table class="correlation-table">
                     <thead>
                         <tr>
@@ -755,8 +818,20 @@
                 row.className = 'clickable';
                 row.innerHTML = `
                     <td>
-                        <strong>${item.label}</strong>
-                        <div style="color:#6b7280;font-size:0.85em;">${item.description}</div>
+                        <div class="factor-cell">
+                            <div class="chart-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <circle cx="5" cy="18" r="2"/>
+                                    <circle cx="12" cy="10" r="2"/>
+                                    <circle cx="19" cy="14" r="2"/>
+                                    <path d="M6.5 16.5L10.5 11.5M13.5 11.5L17.5 12.5"/>
+                                </svg>
+                            </div>
+                            <div class="factor-content">
+                                <strong>${item.label}</strong>
+                                <div style="color:#6b7280;font-size:0.85em;">${item.description}</div>
+                            </div>
+                        </div>
                     </td>
                     <td><span class="correlation-value ${strength.class}">${item.correlation > 0 ? '+' : ''}${item.correlation.toFixed(3)}</span> ${strength.label}</td>
                     <td>${direction}</td>
