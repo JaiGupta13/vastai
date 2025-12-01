@@ -382,7 +382,10 @@
             { key: 'dph_per_gpu', label: 'Price per GPU-Hour ($)', description: 'Hourly price divided by GPU count', getValue: d => d.dph_per_gpu },
             { key: 'cpu_ram_per_gpu', label: 'CPU RAM per GPU (GB)', description: 'System RAM divided by GPU count', getValue: d => d.cpu_ram_per_gpu },
             { key: 'cpu_cores_per_gpu', label: 'Effective CPU Cores per GPU', description: 'CPU threads divided by GPU count', getValue: d => d.cpu_cores_per_gpu },
-            { key: 'cpu_ghz', label: 'CPU Clock (GHz)', description: 'Host CPU frequency (not scaled)', getValue: d => d.cpu_ghz }
+            { key: 'cpu_ghz', label: 'CPU Clock (GHz)', description: 'Host CPU frequency (not scaled)', getValue: d => d.cpu_ghz },
+            { key: 'disk_bw_per_gpu', label: 'Disk Bandwidth per GPU (MB/s)', description: 'Disk bandwidth divided by GPU count', getValue: d => d.disk_bw_per_gpu },
+            { key: 'gpu_mem_bw', label: 'GPU Memory Bandwidth (GB/s)', description: 'Per-GPU HBM/GDDR bandwidth', getValue: d => d.gpu_mem_bw },
+            { key: 'pcie_bw', label: 'PCIe Bandwidth per GPU (GB/s)', description: 'Per-GPU PCIe throughput', getValue: d => d.pcie_bw }
         ];
 
         let datacenterData = [];          // Raw offers from API
@@ -464,6 +467,7 @@
                 const dphPerGpu = item.dph_total != null ? item.dph_total / numGpus : null;
                 const cpuRamPerGpu = item.cpu_ram_gb != null ? item.cpu_ram_gb / numGpus : null;
                 const cpuCoresPerGpu = item.cpu_cores_effective != null ? item.cpu_cores_effective / numGpus : null;
+                const diskBwPerGpu = item.disk_bw != null ? item.disk_bw / numGpus : null;
 
                 // Create numGpus copies of this data point
                 for (let i = 0; i < numGpus; i++) {
@@ -474,6 +478,7 @@
                         dph_per_gpu: dphPerGpu,
                         cpu_ram_per_gpu: cpuRamPerGpu,
                         cpu_cores_per_gpu: cpuCoresPerGpu,
+                        disk_bw_per_gpu: diskBwPerGpu,
                         // Metadata for tracking origin
                         original_dlperf: item.dlperf,
                         original_num_gpus: numGpus,
