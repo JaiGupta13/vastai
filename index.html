@@ -249,7 +249,7 @@
     <div class="container">
         <header>
             <h1>DLPerf Analysis Dashboard</h1>
-            <p class="subtitle">Per-GPU-model conditioning (A100/H100/H200/B200 only) with non-GPU feature attribution and SiliconMark integration.</p>
+            <p class="subtitle">Per-GPU conditioning (A100/H100/H200/B200 only) with non-GPU feature attribution and SiliconMark integration. Multi-GPU instances are expanded so each GPU is a separate data point.</p>
         </header>
 
         <div id="loading" class="loading">
@@ -262,26 +262,22 @@
                     <label for="gpu-model-select">GPU Model</label>
                     <select id="gpu-model-select" class="gpu-select"></select>
                 </div>
-                <div>
-                    <label for="num-gpus-select">Number of GPUs</label>
-                    <select id="num-gpus-select" class="gpu-select"></select>
-                </div>
                 <p class="control-note">
-                    We condition on both the exact GPU SKU (PCIe vs SXM vs NVL treated separately) <em>and</em> the number of GPUs, then look for factors that vary within that specific configuration only.
+                    Each GPU in a multi-GPU instance is treated as a separate data point with per-GPU values (DLPerf, price, CPU cores, RAM scaled by GPU count). We then look for non-GPU factors that explain DLPerf variance.
                 </p>
             </section>
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label">Instances Analyzed</div>
+                    <div class="stat-label">Data Points</div>
                     <div class="stat-value" id="model-instance-count">-</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Avg DLPerf</div>
+                    <div class="stat-label">Avg DLPerf/GPU</div>
                     <div class="stat-value" id="model-avg-dlperf">-</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Median DLPerf</div>
+                    <div class="stat-label">Median DLPerf/GPU</div>
                     <div class="stat-value" id="model-median-dlperf">-</div>
                 </div>
                 <div class="stat-card">
@@ -289,7 +285,7 @@
                     <div class="stat-value" id="model-std-dlperf">-</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Median Price / hr</div>
+                    <div class="stat-label">Median $/GPU-hr</div>
                     <div class="stat-value" id="model-price-median">-</div>
                 </div>
                 <div class="stat-card">
@@ -299,23 +295,23 @@
             </div>
 
             <div class="chart-container">
-                <h2 class="chart-title">DLPerf Distribution for Selected Configuration</h2>
-                <p class="chart-subtitle">Box plot showing min, Q1, median, Q3, and max DLPerf values</p>
+                <h2 class="chart-title">Per-GPU DLPerf Distribution for Selected Model</h2>
+                <p class="chart-subtitle">Box plot showing min, Q1, median, Q3, and max per-GPU DLPerf values</p>
                 <div class="chart-wrapper compact">
                     <canvas id="dlperf-boxplot"></canvas>
                 </div>
             </div>
 
             <div class="chart-container">
-                <h2 class="chart-title">Top Non-GPU Drivers (selected configuration)</h2>
-                <p class="chart-subtitle">Only the requested core metrics (price per hour, CPU RAM, CPU cores/effective cores, CPU clock, and GPU max power) are considered here; each metric drops null, zero, and invalid values before correlation. Click on any factor to see its relationship with DLPerf.</p>
+                <h2 class="chart-title">Top Non-GPU Drivers (selected model)</h2>
+                <p class="chart-subtitle">Per-GPU metrics (price, RAM, CPU cores are divided by GPU count). Click on any factor to see its relationship with per-GPU DLPerf.</p>
                 <table class="correlation-table">
                     <thead>
                         <tr>
                             <th>Factor</th>
-                            <th>Correlation vs DLPerf</th>
+                            <th>Correlation vs Per-GPU DLPerf</th>
                             <th>Direction</th>
-                            <th>Samples</th>
+                            <th>GPU Data Points</th>
                         </tr>
                     </thead>
                     <tbody id="model-correlation-table"></tbody>
@@ -330,7 +326,7 @@
 
             <div class="grid-2">
                 <div class="chart-container">
-                    <h2 class="chart-title">SiliconMark Quickmark vs DLPerf</h2>
+                    <h2 class="chart-title">SiliconMark Quickmark vs Per-GPU DLPerf</h2>
                     <p class="chart-subtitle">Benchmark the exact machines you care about (run SiliconMark quickmark and append to quickmark_results.json).</p>
                     <div id="quickmark-placeholder" class="placeholder hidden">
                         No quickmark runs captured yet. Spin up the target host, run <code>quickmark quickmark</code>, store the score in <code>quickmark_results.json</code>, and shut the instance down when done.
@@ -342,7 +338,8 @@
             </div>
 
             <div class="chart-container">
-                <h2 class="chart-title">DLPerf Distribution (datacenter GPUs)</h2>
+                <h2 class="chart-title">Per-GPU DLPerf Distribution (datacenter GPUs)</h2>
+                <p class="chart-subtitle">Each GPU in multi-GPU instances is treated as a separate data point with DLPerf scaled by GPU count.</p>
                 <div class="chart-wrapper">
                     <canvas id="dlperf-distribution"></canvas>
                 </div>
@@ -350,8 +347,8 @@
 
             <div class="grid-2">
                 <div class="chart-container">
-                    <h2 class="chart-title">GPU Configuration Leaderboard</h2>
-                    <p class="chart-subtitle">Average DLPerf vs median price/hr across datacenter GPU model × GPU count configurations.</p>
+                    <h2 class="chart-title">GPU Model Leaderboard</h2>
+                    <p class="chart-subtitle">Average per-GPU DLPerf vs median per-GPU-hour price across datacenter GPU models.</p>
                     <div class="chart-wrapper tall">
                         <canvas id="gpu-model-chart"></canvas>
                     </div>
@@ -360,13 +357,13 @@
 
             <div class="chart-container">
                 <h2 class="chart-title">Quickmark Coverage</h2>
-                <p class="chart-subtitle">Track how many benchmark runs exist per GPU configuration so we know where more sampling is needed.</p>
+                <p class="chart-subtitle">Track how many benchmark runs exist per GPU model so we know where more sampling is needed.</p>
                 <table class="correlation-table">
                     <thead>
                         <tr>
-                            <th>GPU Configuration</th>
+                            <th>GPU Model</th>
                             <th>Quickmark Runs</th>
-                            <th>Coverage</th>
+                            <th>Instance Coverage</th>
                             <th>Avg Quickmark Score</th>
                         </tr>
                     </thead>
@@ -380,21 +377,20 @@
     <script>
         const DATACENTER_KEYWORDS = ['A100', 'H100', 'H200', 'B200'];
         const MIN_POINTS_FOR_CORRELATION = 4;
+        // NON_GPU_SPECS now reference per-GPU scaled values
         const NON_GPU_SPECS = [
-            { key: 'dph_total', label: 'Price per Hour ($)', description: 'Total hourly list price for the node', getValue: d => d.dph_total },
-            { key: 'cpu_ram_gb', label: 'CPU RAM (GB)', description: 'System RAM in GB (converted)', getValue: d => d.cpu_ram_gb },
-            { key: 'cpu_cores_effective', label: 'Effective CPU Cores', description: 'CPU threads available to the VM', getValue: d => d.cpu_cores_effective },
-            { key: 'cpu_ghz', label: 'CPU Clock (GHz)', description: 'Host CPU frequency', getValue: d => d.cpu_ghz },
-            { key: 'cpu_cores', label: 'CPU Cores', description: 'Reported physical cores', getValue: d => d.cpu_cores },
-            { key: 'gpu_max_power', label: 'GPU Max Power (W)', description: 'Advertised card power budget', getValue: d => d.gpu_max_power }
+            { key: 'dph_per_gpu', label: 'Price per GPU-Hour ($)', description: 'Hourly price divided by GPU count', getValue: d => d.dph_per_gpu },
+            { key: 'cpu_ram_per_gpu', label: 'CPU RAM per GPU (GB)', description: 'System RAM divided by GPU count', getValue: d => d.cpu_ram_per_gpu },
+            { key: 'cpu_cores_per_gpu', label: 'Effective CPU Cores per GPU', description: 'CPU threads divided by GPU count', getValue: d => d.cpu_cores_per_gpu },
+            { key: 'cpu_ghz', label: 'CPU Clock (GHz)', description: 'Host CPU frequency (not scaled)', getValue: d => d.cpu_ghz },
+            { key: 'gpu_max_power', label: 'GPU Max Power (W)', description: 'Per-GPU power budget (not scaled)', getValue: d => d.gpu_max_power }
         ];
 
-        let datacenterData = [];
-        let groupedByModel = {};
-        let groupedByModelAndGpus = {};
+        let datacenterData = [];          // Raw offers from API
+        let expandedData = [];             // Expanded so each GPU is a data point
+        let groupedByModel = {};           // Grouped by GPU model only
         let perModelSummaries = {};
         let selectedModel = null;
-        let selectedNumGpus = null;
         let currentDataset = null;
         let currentCorrelations = null;
         const charts = {};
@@ -423,9 +419,11 @@
                 return;
             }
 
-            groupedByModel = groupBy(datacenterData, item => item.gpu_name);
-            groupedByModelAndGpus = groupBy(datacenterData, item => `${item.gpu_name}|${item.num_gpus || 'unknown'}`);
-            perModelSummaries = buildPerModelSummaries(groupedByModelAndGpus);
+            // Expand multi-GPU instances into individual per-GPU data points
+            expandedData = expandToPerGpuDataPoints(datacenterData);
+
+            groupedByModel = groupBy(expandedData, item => item.gpu_name);
+            perModelSummaries = buildPerModelSummaries(groupedByModel);
 
             populateModelSelect(Object.keys(groupedByModel));
             renderQuickmarkCoverageTable(perModelSummaries);
@@ -437,9 +435,6 @@
 
             const modelSelect = document.getElementById('gpu-model-select');
             selectedModel = modelSelect.value;
-            updateNumGpusSelect();
-            const numGpusSelect = document.getElementById('num-gpus-select');
-            selectedNumGpus = numGpusSelect.value;
             updateModelView();
         }
 
@@ -457,6 +452,37 @@
                 listing_uptime_hours: item.duration != null ? item.duration / 3600 : null,
                 quickmark_entry: quickmark
             };
+        }
+
+        // Expand multi-GPU instances into individual per-GPU data points
+        // e.g., an 8xH100 instance becomes 8 data points, each with per-GPU scaled values
+        function expandToPerGpuDataPoints(data) {
+            const expanded = [];
+            data.forEach(item => {
+                const numGpus = item.num_gpus || 1;
+                // Compute per-GPU values
+                const dlperfPerGpu = item.dlperf != null ? item.dlperf / numGpus : null;
+                const dphPerGpu = item.dph_total != null ? item.dph_total / numGpus : null;
+                const cpuRamPerGpu = item.cpu_ram_gb != null ? item.cpu_ram_gb / numGpus : null;
+                const cpuCoresPerGpu = item.cpu_cores_effective != null ? item.cpu_cores_effective / numGpus : null;
+
+                // Create numGpus copies of this data point
+                for (let i = 0; i < numGpus; i++) {
+                    expanded.push({
+                        ...item,
+                        // Per-GPU scaled values
+                        dlperf: dlperfPerGpu,
+                        dph_per_gpu: dphPerGpu,
+                        cpu_ram_per_gpu: cpuRamPerGpu,
+                        cpu_cores_per_gpu: cpuCoresPerGpu,
+                        // Metadata for tracking origin
+                        original_dlperf: item.dlperf,
+                        original_num_gpus: numGpus,
+                        gpu_index: i  // Which GPU in the instance (0-indexed)
+                    });
+                }
+            });
+            return expanded;
         }
 
         function buildQuickmarkMap(entries) {
@@ -494,10 +520,17 @@
         function buildPerModelSummaries(groups) {
             const summaries = {};
             Object.entries(groups).forEach(([model, dataset]) => {
+                // Now dlperf is per-GPU, and prices are per-GPU
                 const dlperfValues = dataset.map(item => item.dlperf);
-                const priceValues = dataset.map(item => item.dph_total).filter(isFinite);
+                const priceValues = dataset.map(item => item.dph_per_gpu).filter(isFinite);
+                
+                // For quickmark, we only count unique machines (not expanded)
+                // Group by machine_id to get unique entries
+                const seenMachines = new Set();
                 const quickmarkEntries = dataset
                     .map(item => {
+                        if (seenMachines.has(item.machine_id)) return null;
+                        seenMachines.add(item.machine_id);
                         const quickmark = item.quickmark_entry;
                         if (!quickmark || quickmark.quickmark_score == null || isNaN(quickmark.quickmark_score)) return null;
                         return {
@@ -506,14 +539,20 @@
                             machine_id: item.machine_id,
                             host_id: item.host_id,
                             measured_at: quickmark.measured_at,
-                            notes: quickmark.notes || ''
+                            notes: quickmark.notes || '',
+                            original_num_gpus: item.original_num_gpus
                         };
                     })
                     .filter(Boolean);
 
+                // Count unique instances (not expanded GPUs) for coverage stats
+                const uniqueMachineIds = new Set(dataset.map(item => item.machine_id));
+                const uniqueInstanceCount = uniqueMachineIds.size;
+
                 summaries[model] = {
                     dataset,
-                    count: dataset.length,
+                    count: dataset.length,  // Total GPU data points
+                    uniqueInstances: uniqueInstanceCount,  // Unique machine count
                     dlperfStats: computeStats(dlperfValues),
                     priceStats: computeStats(priceValues, { skipZero: true }),
                     correlations: computeCorrelations(dataset, NON_GPU_SPECS),
@@ -637,61 +676,26 @@
             const select = document.getElementById('gpu-model-select');
             select.innerHTML = '';
             const sortedModels = models
-                .map(name => ({ name, count: groupedByModel[name]?.length || 0 }))
-                .sort((a, b) => b.count - a.count);
+                .map(name => {
+                    const summary = perModelSummaries[name];
+                    return { 
+                        name, 
+                        gpuCount: summary?.count || 0,
+                        instanceCount: summary?.uniqueInstances || 0 
+                    };
+                })
+                .sort((a, b) => b.gpuCount - a.gpuCount);
 
             sortedModels.forEach(entry => {
                 const option = document.createElement('option');
                 option.value = entry.name;
-                option.textContent = `${entry.name} (${entry.count})`;
+                option.textContent = `${entry.name} (${entry.gpuCount} GPUs from ${entry.instanceCount} instances)`;
                 select.appendChild(option);
             });
 
             if (!select.dataset.bound) {
                 select.addEventListener('change', event => {
                     selectedModel = event.target.value;
-                    updateNumGpusSelect();
-                    const numGpusSelect = document.getElementById('num-gpus-select');
-                    selectedNumGpus = numGpusSelect.value;
-                    updateModelView();
-                });
-                select.dataset.bound = 'true';
-            }
-        }
-
-        function updateNumGpusSelect() {
-            const select = document.getElementById('num-gpus-select');
-            select.innerHTML = '';
-            
-            if (!selectedModel) {
-                return;
-            }
-
-            const modelData = groupedByModel[selectedModel] || [];
-            const numGpusCounts = {};
-            modelData.forEach(item => {
-                const numGpus = item.num_gpus || 'unknown';
-                numGpusCounts[numGpus] = (numGpusCounts[numGpus] || 0) + 1;
-            });
-
-            const sortedNumGpus = Object.entries(numGpusCounts)
-                .map(([numGpus, count]) => ({ numGpus, count }))
-                .sort((a, b) => {
-                    const aNum = a.numGpus === 'unknown' ? -1 : Number(a.numGpus);
-                    const bNum = b.numGpus === 'unknown' ? -1 : Number(b.numGpus);
-                    return aNum - bNum;
-                });
-
-            sortedNumGpus.forEach(entry => {
-                const option = document.createElement('option');
-                option.value = entry.numGpus;
-                option.textContent = `${entry.numGpus === 'unknown' ? 'Unknown' : entry.numGpus} GPU${entry.numGpus === 1 ? '' : 's'} (${entry.count})`;
-                select.appendChild(option);
-            });
-
-            if (!select.dataset.bound) {
-                select.addEventListener('change', event => {
-                    selectedNumGpus = event.target.value;
                     updateModelView();
                 });
                 select.dataset.bound = 'true';
@@ -699,9 +703,8 @@
         }
 
         function updateModelView() {
-            if (!selectedModel || selectedNumGpus === null) return;
-            const compositeKey = `${selectedModel}|${selectedNumGpus}`;
-            const summary = perModelSummaries[compositeKey];
+            if (!selectedModel) return;
+            const summary = perModelSummaries[selectedModel];
             if (!summary) return;
             currentDataset = summary.dataset;
             currentCorrelations = summary.correlations;
@@ -715,16 +718,18 @@
         }
 
         function updateStatsCards(summary) {
-            document.getElementById('model-instance-count').textContent = summary.count.toLocaleString();
+            // Show both GPU count and instance count
+            document.getElementById('model-instance-count').textContent = `${summary.count.toLocaleString()} GPUs`;
             document.getElementById('model-avg-dlperf').textContent = formatNumber(summary.dlperfStats.avg);
             document.getElementById('model-median-dlperf').textContent = formatNumber(summary.dlperfStats.median);
             document.getElementById('model-std-dlperf').textContent = formatNumber(summary.dlperfStats.std);
             document.getElementById('model-price-median').textContent = formatCurrency(summary.priceStats.median);
 
+            // Quickmark coverage is per-instance, not per-GPU
             const quickmarkRuns = summary.quickmarkEntries.length;
-            const coveragePct = summary.count ? ((quickmarkRuns / summary.count) * 100).toFixed(0) : 0;
+            const coveragePct = summary.uniqueInstances ? ((quickmarkRuns / summary.uniqueInstances) * 100).toFixed(0) : 0;
             document.getElementById('model-quickmark-coverage').textContent = quickmarkRuns
-                ? `${quickmarkRuns}/${summary.count} (${coveragePct}%)`
+                ? `${quickmarkRuns}/${summary.uniqueInstances} instances (${coveragePct}%)`
                 : '0 recorded';
         }
 
@@ -741,7 +746,7 @@
 
             correlations.slice(0, 8).forEach(item => {
                 const strength = getCorrelationStrength(item.correlation);
-                const direction = item.correlation > 0 ? 'Higher value → higher DLPerf' : 'Higher value → lower DLPerf';
+                const direction = item.correlation > 0 ? 'Higher → higher DLPerf/GPU' : 'Higher → lower DLPerf/GPU';
                 const row = document.createElement('tr');
                 row.className = 'clickable';
                 row.innerHTML = `
@@ -786,7 +791,7 @@
             const canvas = document.getElementById(canvasId);
             
             container.classList.remove('hidden');
-            title.textContent = `${factorItem.label} vs DLPerf`;
+            title.textContent = `${factorItem.label} vs Per-GPU DLPerf`;
 
             const correlation = calculateCorrelation(pairs.map(p => p.x), pairs.map(p => p.y));
 
@@ -811,13 +816,13 @@
                             title: { display: true, text: factorItem.label }
                         },
                         y: {
-                            title: { display: true, text: 'DLPerf' }
+                            title: { display: true, text: 'Per-GPU DLPerf' }
                         }
                     },
                     plugins: {
                         tooltip: {
                             callbacks: {
-                                label: context => `${factorItem.label}: ${context.parsed.x.toFixed(2)}, DLPerf: ${context.parsed.y.toFixed(1)}`
+                                label: context => `${factorItem.label}: ${context.parsed.x.toFixed(2)}, DLPerf/GPU: ${context.parsed.y.toFixed(1)}`
                             }
                         }
                     }
@@ -1024,7 +1029,7 @@
                             title: { display: true, text: 'SiliconMark Quickmark Score' }
                         },
                         y: {
-                            title: { display: true, text: 'DLPerf' }
+                            title: { display: true, text: 'Per-GPU DLPerf' }
                         }
                     },
                     plugins: {
@@ -1032,7 +1037,7 @@
                             callbacks: {
                                 label: context => {
                                     const data = context.raw;
-                                    return `Quickmark: ${data.x.toFixed(1)}, DLPerf: ${data.y.toFixed(1)}, machine ${data.machine}`;
+                                    return `Quickmark: ${data.x.toFixed(1)}, DLPerf/GPU: ${data.y.toFixed(1)}, machine ${data.machine}`;
                                 }
                             }
                         }
@@ -1044,7 +1049,8 @@
         function createDistributionChart() {
             const canvasId = 'dlperf-distribution';
             const ctx = document.getElementById(canvasId).getContext('2d');
-            const values = datacenterData.map(item => item.dlperf);
+            // Use expanded data (per-GPU values)
+            const values = expandedData.map(item => item.dlperf).filter(v => v != null && isFinite(v));
             if (!values.length) return;
 
             const min = Math.min(...values);
@@ -1080,7 +1086,7 @@
                 data: {
                     labels,
                     datasets: [{
-                        label: 'Instances',
+                        label: 'GPU Data Points',
                         data: bins,
                         backgroundColor: 'rgba(99, 102, 241, 0.7)',
                         borderColor: 'rgba(99, 102, 241, 1)'
@@ -1091,8 +1097,8 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { title: { display: true, text: 'DLPerf range' } },
-                        y: { title: { display: true, text: 'Instances' }, beginAtZero: true }
+                        x: { title: { display: true, text: 'Per-GPU DLPerf range' } },
+                        y: { title: { display: true, text: 'GPU Data Points' }, beginAtZero: true }
                     }
                 }
             });
@@ -1102,13 +1108,13 @@
             const canvasId = 'gpu-model-chart';
             const ctx = document.getElementById(canvasId).getContext('2d');
             const rows = Object.entries(perModelSummaries)
-                .map(([key, summary]) => {
-                    const [model, numGpus] = key.split('|');
+                .map(([model, summary]) => {
                     return {
-                        label: `${model} × ${numGpus === 'unknown' ? '?' : numGpus} GPU${numGpus === 1 ? '' : 's'}`,
+                        label: model,
                         avgDlperf: summary.dlperfStats.avg || 0,
                         medianPrice: summary.priceStats.median || 0,
-                        count: summary.count
+                        gpuCount: summary.count,
+                        instanceCount: summary.uniqueInstances
                     };
                 })
                 .sort((a, b) => b.avgDlperf - a.avgDlperf);
@@ -1121,13 +1127,13 @@
                 data: {
                     labels: rows.map(row => row.label),
                     datasets: [{
-                        label: 'Avg DLPerf',
+                        label: 'Avg DLPerf/GPU',
                         data: rows.map(row => row.avgDlperf),
                         backgroundColor: 'rgba(99, 102, 241, 0.7)',
                         borderColor: 'rgba(99, 102, 241, 1)',
                         yAxisID: 'y'
                     }, {
-                        label: 'Median Price/hr',
+                        label: 'Median $/GPU-hr',
                         data: rows.map(row => row.medianPrice),
                         type: 'line',
                         borderColor: '#f59e0b',
@@ -1141,18 +1147,18 @@
                     scales: {
                         y: {
                             position: 'left',
-                            title: { display: true, text: 'Avg DLPerf' }
+                            title: { display: true, text: 'Avg DLPerf per GPU' }
                         },
                         y1: {
                             position: 'right',
-                            title: { display: true, text: 'Median price/hr (USD)' },
+                            title: { display: true, text: 'Median $/GPU-hr (USD)' },
                             grid: { drawOnChartArea: false }
                         }
                     },
                     plugins: {
                         tooltip: {
                             callbacks: {
-                                afterLabel: context => `Instances: ${rows[context.dataIndex].count}`
+                                afterLabel: context => `${rows[context.dataIndex].gpuCount} GPUs from ${rows[context.dataIndex].instanceCount} instances`
                             }
                         }
                     },
@@ -1166,27 +1172,26 @@
             tbody.innerHTML = '';
 
             const rows = Object.entries(summaries)
-                .map(([key, summary]) => {
-                    const [model, numGpus] = key.split('|');
+                .map(([model, summary]) => {
                     return {
                         model,
-                        numGpus,
-                        label: `${model} × ${numGpus === 'unknown' ? '?' : numGpus} GPU${numGpus === 1 ? '' : 's'}`,
+                        label: model,
                         runs: summary.quickmarkEntries.length,
-                        total: summary.count,
+                        totalInstances: summary.uniqueInstances,
+                        totalGpus: summary.count,
                         avgScore: summary.quickmarkStats.avg
                     };
                 })
                 .sort((a, b) => b.runs - a.runs);
 
             rows.forEach(row => {
-                const coverage = row.total ? `${((row.runs / row.total) * 100).toFixed(0)}%` : '0%';
+                const coverage = row.totalInstances ? `${((row.runs / row.totalInstances) * 100).toFixed(0)}%` : '0%';
                 const displayScore = row.runs ? formatNumber(row.avgScore) : '—';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.label}</td>
                     <td>${row.runs}</td>
-                    <td>${row.runs}/${row.total} (${coverage})</td>
+                    <td>${row.runs}/${row.totalInstances} instances (${coverage})</td>
                     <td>${displayScore}</td>
                 `;
                 tbody.appendChild(tr);
