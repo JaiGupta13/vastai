@@ -138,13 +138,7 @@ echo -e "  ${CYAN}Price:${NC}        \$${DPH_TOTAL}/hr"
 echo -e "  ${CYAN}Location:${NC}     $GEOLOCATION"
 echo -e "  ${CYAN}Host ID:${NC}      $HOST_ID"
 
-# Confirm before proceeding
-echo -e "\n${YELLOW}Proceed with renting this instance? (y/N)${NC}"
-read -r CONFIRM
-if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
-    log_info "Aborted by user"
-    exit 0
-fi
+log_info "Proceeding automatically to rent this instance..."
 
 # ============================================================================
 # Step 3: Create SiliconMark Job

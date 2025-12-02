@@ -1,0 +1,59 @@
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 0: Validating Prerequisites[0m
+[0;36m════════════════════════════════════════[0m
+[0;32m[SUCCESS][0m All required tools found
+[0;32m[SUCCESS][0m SiliconData credentials configured
+[0;32m[SUCCESS][0m Vast.ai API key configured
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 1: Get Machine ID[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Using machine ID from argument: 38231
+[0;32m[SUCCESS][0m Target machine ID: 38231
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 2: Finding Offer for Machine 38231[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Searching for available offers on machine 38231...
+[0;32m[SUCCESS][0m Found offer:
+  [0;36mOffer ID:[0m     28401388
+  [0;36mGPU:[0m          2 x A100 SXM4
+  [0;36mDLPerf:[0m       180.54293944640023
+  [0;36mPrice:[0m        $1.417262962962963/hr
+  [0;36mLocation:[0m     Germany, DE
+  [0;36mHost ID:[0m      37070
+[0;34m[INFO][0m Proceeding automatically to rent this instance...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 3: Creating SiliconMark Job[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Job name: quickmark-machine-38231-20251201-192552
+[0;34m[INFO][0m Logging into SiliconData as tojaigupta@gmail.com...
+[0;32m[SUCCESS][0m Got SiliconData auth token
+[0;34m[INFO][0m Creating SiliconMark job...
+[0;32m[SUCCESS][0m SiliconMark job created
+  [0;36mJob ID:[0m    1995665778417999872
+  [0;36mAPI Key:[0m   eyJhbGciOiJIUzI1NiIsImtpZCI6IlNpbGljb25f...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 4: Creating Vast.ai Instance[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Creating instance from offer 28401388...
+[0;34m[INFO][0m Using image: vastai/pytorch
+{
+ "new_contract": 28411432,
+ "success": true
+}
+[0;32m[SUCCESS][0m Instance created: 28411432
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 5: Waiting for Instance to be Ready[0m
+[0;36m════════════════════════════════════════[0m
+  Status: [1;33munknown[0m (waited 0s)
+  Status: [1;33munknown[0m (waited 10s)
+  Status: [1;33mloading[0m (waited 20s)
+  Status: [1;33mloading[0m (waited 30s)
+jq: parse error: Invalid literal at line 1, column 7
+[1;33m[WARN][0m Cleaning up: destroying instance 28411432...
+null

@@ -1,0 +1,140 @@
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 0: Validating Prerequisites[0m
+[0;36m════════════════════════════════════════[0m
+[0;32m[SUCCESS][0m All required tools found
+[0;32m[SUCCESS][0m SiliconData credentials configured
+[0;32m[SUCCESS][0m Vast.ai API key configured
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 1: Get Machine ID[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Using machine ID from argument: 41067
+[0;32m[SUCCESS][0m Target machine ID: 41067
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 2: Finding Offer for Machine 41067[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Searching for available offers on machine 41067...
+[0;32m[SUCCESS][0m Found offer:
+  [0;36mOffer ID:[0m     28355572
+  [0;36mGPU:[0m          8 x A100 SXM4
+  [0;36mDLPerf:[0m       762.7981070204369
+  [0;36mPrice:[0m        $4.908055555555556/hr
+  [0;36mLocation:[0m     Georgia, US
+  [0;36mHost ID:[0m      195410
+[0;34m[INFO][0m Proceeding automatically to rent this instance...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 3: Creating SiliconMark Job[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Job name: quickmark-machine-41067-20251201-192552
+[0;34m[INFO][0m Logging into SiliconData as tojaigupta@gmail.com...
+[0;32m[SUCCESS][0m Got SiliconData auth token
+[0;34m[INFO][0m Creating SiliconMark job...
+[0;32m[SUCCESS][0m SiliconMark job created
+  [0;36mJob ID:[0m    1995665778644492288
+  [0;36mAPI Key:[0m   eyJhbGciOiJIUzI1NiIsImtpZCI6IlNpbGljb25f...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 4: Creating Vast.ai Instance[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Creating instance from offer 28355572...
+[0;34m[INFO][0m Using image: vastai/pytorch
+{
+ "new_contract": 28411437,
+ "success": true
+}
+[0;32m[SUCCESS][0m Instance created: 28411437
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 5: Waiting for Instance to be Ready[0m
+[0;36m════════════════════════════════════════[0m
+  Status: [1;33munknown[0m (waited 0s)
+  Status: [1;33mloading[0m (waited 10s)
+  Status: [1;33mloading[0m (waited 20s)
+  Status: [1;33mloading[0m (waited 30s)
+  Status: [1;33mloading[0m (waited 40s)
+  Status: [1;33mloading[0m (waited 50s)
+  Status: [1;33mloading[0m (waited 60s)
+  Status: [1;33mloading[0m (waited 70s)
+  Status: [1;33mloading[0m (waited 80s)
+  Status: [1;33mloading[0m (waited 90s)
+  Status: [1;33mloading[0m (waited 100s)
+  Status: [1;33mloading[0m (waited 110s)
+  Status: [1;33mloading[0m (waited 120s)
+  Status: [1;33mloading[0m (waited 130s)
+  Status: [1;33mloading[0m (waited 140s)
+  Status: [1;33mloading[0m (waited 150s)
+  Status: [1;33mloading[0m (waited 160s)
+  Status: [1;33mloading[0m (waited 170s)
+  Status: [1;33mloading[0m (waited 180s)
+  Status: [1;33mloading[0m (waited 190s)
+  Status: [1;33mloading[0m (waited 200s)
+  Status: [1;33mloading[0m (waited 210s)
+  Status: [1;33mloading[0m (waited 220s)
+  Status: [1;33mloading[0m (waited 230s)
+  Status: [1;33mloading[0m (waited 240s)
+  Status: [1;33mloading[0m (waited 250s)
+  Status: [1;33mrunning[0m (waited 260s)
+[0;32m[SUCCESS][0m Instance is running!
+[0;34m[INFO][0m Waiting for onstart script to complete...
+[0;34m[INFO][0m Monitoring logs for 'Setup Complete' message...
+[K  [0;36mLast log:[0m Hit:7 http://archive.ubuntu.com/ubuntu jammy-backports InRelease[0m    [K  [0;36mLast log:[0m Collecting nvidia-ml-py>=12.0.0[0m    [K  [0;36mLast log:[0m   Downloading torch-2.9.1-cp310-cp310-manylinux_2_28_x86_64.whl (899.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading torch-2.9.1-cp310-cp310-manylinux_2_28_x86_64.whl (899.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading torch-2.9.1-cp310-cp310-manylinux_2_28_x86_64.whl (899.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading torch-2.9.1-cp310-cp310-manylinux_2_28_x86_64.whl (899.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading torch-2.9.1-cp310-cp310-manylinux_2_28_x86_64.whl (899.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cusolver_cu12-11.7.3.90-py3-none-manylinux_2_27_x86_64.whl (267.5 MB)[0m    [K  [0;36mLast log:[0m      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 267.5/267.5 MB 8.0 MB/s eta 0:00:00[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cusparselt_cu12-0.7.1-py3-none-manylinux2014_x86_64.whl (287.2 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cusparse_cu12-12.5.8.93-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (288.2 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cusparse_cu12-12.5.8.93-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (288.2 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_nccl_cu12-2.27.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (322.3 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_nccl_cu12-2.27.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (322.3 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_nvshmem_cu12-3.3.20-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (124.7 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cublas_cu12-12.8.4.1-py3-none-manylinux_2_27_x86_64.whl (594.3 MB)[0m    [K  [0;36mLast log:[0m banner exchange: Connection from 13.221.125.49 port 41268: invalid format[0m    [K  [0;36mLast log:[0m banner exchange: Connection from 13.221.125.49 port 41268: invalid format[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cufft_cu12-11.3.3.83-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (193.1 MB)[0m    [K  [0;36mLast log:[0m   Downloading triton-3.5.1-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (170.3 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl (706.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl (706.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl (706.8 MB)[0m    [K  [0;36mLast log:[0m banner exchange: Connection from 3.237.80.123 port 45060: invalid format[0m    [K  [0;36mLast log:[0m Collecting nvidia-nvjitlink-cu12==12.8.93[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cuda_nvrtc_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (88.0 MB)[0m    [K  [0;36mLast log:[0m Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch[0m    [K  [0;36mLast log:[0m Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch[0m    [K  [0;36mLast log:[0m Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch[0m    [K  [0;36mLast log:[0m Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch[0m    [K  [0;36mLast log:[0m Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch[0m    [K  [0;36mLast log:[0m Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch[0m    [K  [0;36mLast log:[0m Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch[0m    [K  [0;36mLast log:[0m Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch[0m    [K  [0;36mLast log:[0m Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch[0m    [K  [0;36mLast log:[0m === Setup Complete, Agent Ready ===[0m    
+[0;32m[SUCCESS][0m Setup complete detected in logs!
+
+[0;32m[SUCCESS][0m Setup completed successfully
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 6: Getting SSH Connection Details[0m
+[0;36m════════════════════════════════════════[0m
+[0;32m[SUCCESS][0m SSH connection: root@ssh1.vast.ai:11436
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 7: Running SiliconMark QuickMark Benchmark[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Connecting via SSH and running benchmark...
+[0;34m[INFO][0m This typically takes 2-5 minutes...
+Warning: Permanently added '[ssh1.vast.ai]:11436' (ED25519) to the list of known hosts.
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+-rwxr-xr-x 1 root root 32632208 Nov 24 17:34 /workspace/agent
+[0;34m[INFO][0m Executing SiliconMark agent with API key...
+Warning: Permanently added '[ssh1.vast.ai]:11436' (ED25519) to the list of known hosts.
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+[0;32m[SUCCESS][0m Benchmark completed!
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 8: Parsing and Saving Results[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Raw result saved to siliconmark_output.json
+[0;32m[SUCCESS][0m Benchmark Results:
+  [0;36mGPU:[0m               NVIDIA A100-SXM4-40GB (x8)
+  [0;36mBF16 TFLOPS:[0m       2082.85
+  [0;36mFP16 TFLOPS:[0m       2032.8
+  [0;36mFP32 TFLOPS:[0m       974.15
+  [0;36mMixed Precision:[0m   1649.08 TFLOPS
+  [0;36mMemory BW:[0m         10608.73 GB/s
+  [0;36mPower:[0m             3787.4 W
+  [0;36mTemperature:[0m       72 °C
+[0;32m[SUCCESS][0m Results appended to /Users/jai/Documents/GitHub/vastai/quickmark_results.json
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 9: Destroying Instance[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Destroying instance 28411437...
+null
+[0;32m[SUCCESS][0m Instance destroyed
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Benchmark Complete![0m
+[0;36m════════════════════════════════════════[0m
+[0;32mSummary:[0m
+  Machine ID:      41067
+  GPU:             NVIDIA A100-SXM4-40GB
+  QuickMark Score: [0;32m2082.85[0m BF16 TFLOPS
+  DLPerf:          762.7981070204369
+  Results saved:   /Users/jai/Documents/GitHub/vastai/quickmark_results.json
+
+[0;36mTip:[0m Refresh your dashboard to see the new data point!

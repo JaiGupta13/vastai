@@ -1,0 +1,45 @@
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 0: Validating Prerequisites[0m
+[0;36m════════════════════════════════════════[0m
+[0;32m[SUCCESS][0m All required tools found
+[0;32m[SUCCESS][0m SiliconData credentials configured
+[0;32m[SUCCESS][0m Vast.ai API key configured
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 1: Get Machine ID[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Using machine ID from argument: 19308
+[0;32m[SUCCESS][0m Target machine ID: 19308
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 2: Finding Offer for Machine 19308[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Searching for available offers on machine 19308...
+[0;32m[SUCCESS][0m Found offer:
+  [0;36mOffer ID:[0m     27489985
+  [0;36mGPU:[0m          1 x A100 SXM4
+  [0;36mDLPerf:[0m       92.0271015050393
+  [0;36mPrice:[0m        $0.5219351851851852/hr
+  [0;36mLocation:[0m     Sweden, SE
+  [0;36mHost ID:[0m      102965
+[0;34m[INFO][0m Proceeding automatically to rent this instance...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 3: Creating SiliconMark Job[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Job name: quickmark-machine-19308-20251201-192552
+[0;34m[INFO][0m Logging into SiliconData as tojaigupta@gmail.com...
+[0;32m[SUCCESS][0m Got SiliconData auth token
+[0;34m[INFO][0m Creating SiliconMark job...
+[0;32m[SUCCESS][0m SiliconMark job created
+  [0;36mJob ID:[0m    1995665778711601152
+  [0;36mAPI Key:[0m   eyJhbGciOiJIUzI1NiIsImtpZCI6IlNpbGljb25f...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 4: Creating Vast.ai Instance[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Creating instance from offer 27489985...
+[0;34m[INFO][0m Using image: vastai/pytorch
+failed with error 429: (no detail message supplied)
+jq: parse error: Invalid literal at line 1, column 7

@@ -1,0 +1,125 @@
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 0: Validating Prerequisites[0m
+[0;36m════════════════════════════════════════[0m
+[0;32m[SUCCESS][0m All required tools found
+[0;32m[SUCCESS][0m SiliconData credentials configured
+[0;32m[SUCCESS][0m Vast.ai API key configured
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 1: Get Machine ID[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Using machine ID from argument: 43621
+[0;32m[SUCCESS][0m Target machine ID: 43621
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 2: Finding Offer for Machine 43621[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Searching for available offers on machine 43621...
+[0;32m[SUCCESS][0m Found offer:
+  [0;36mOffer ID:[0m     27183003
+  [0;36mGPU:[0m          1 x A100 SXM4
+  [0;36mDLPerf:[0m       131.91601505469367
+  [0;36mPrice:[0m        $1.1200555555555556/hr
+  [0;36mLocation:[0m     Czechia, CZ
+  [0;36mHost ID:[0m      125728
+[0;34m[INFO][0m Proceeding automatically to rent this instance...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 3: Creating SiliconMark Job[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Job name: quickmark-machine-43621-20251201-192552
+[0;34m[INFO][0m Logging into SiliconData as tojaigupta@gmail.com...
+[0;32m[SUCCESS][0m Got SiliconData auth token
+[0;34m[INFO][0m Creating SiliconMark job...
+[0;32m[SUCCESS][0m SiliconMark job created
+  [0;36mJob ID:[0m    1995665777763688448
+  [0;36mAPI Key:[0m   eyJhbGciOiJIUzI1NiIsImtpZCI6IlNpbGljb25f...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 4: Creating Vast.ai Instance[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Creating instance from offer 27183003...
+[0;34m[INFO][0m Using image: vastai/pytorch
+{
+ "new_contract": 28411426,
+ "success": true
+}
+[0;32m[SUCCESS][0m Instance created: 28411426
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 5: Waiting for Instance to be Ready[0m
+[0;36m════════════════════════════════════════[0m
+  Status: [1;33munknown[0m (waited 0s)
+  Status: [1;33munknown[0m (waited 10s)
+  Status: [1;33mloading[0m (waited 20s)
+  Status: [1;33mloading[0m (waited 30s)
+  Status: [1;33mloading[0m (waited 40s)
+  Status: [1;33mloading[0m (waited 50s)
+  Status: [1;33mloading[0m (waited 60s)
+  Status: [1;33mloading[0m (waited 70s)
+  Status: [1;33mloading[0m (waited 80s)
+  Status: [1;33mloading[0m (waited 90s)
+  Status: [1;33mloading[0m (waited 100s)
+  Status: [1;33mrunning[0m (waited 110s)
+[0;32m[SUCCESS][0m Instance is running!
+[0;34m[INFO][0m Waiting for onstart script to complete...
+[0;34m[INFO][0m Monitoring logs for 'Setup Complete' message...
+[K  [0;36mLast log:[0m Reading package lists...[0m    [K  [0;36mLast log:[0m      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 49.0/49.0 KB 5.4 MB/s eta 0:00:00[0m    [K  [0;36mLast log:[0m   Downloading torch-2.9.1-cp310-cp310-manylinux_2_28_x86_64.whl (899.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_nccl_cu12-2.27.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (322.3 MB)[0m    [K  [0;36mLast log:[0m      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 267.5/267.5 MB 13.0 MB/s eta 0:00:00[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl (706.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl (706.8 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_nvjitlink_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (39.3 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cuda_nvrtc_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (88.0 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cuda_nvrtc_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (88.0 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cuda_nvrtc_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (88.0 MB)[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cuda_nvrtc_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (88.0 MB)[0m    [K  [0;36mLast log:[0m banner exchange: Connection from 3.89.80.3 port 38664: invalid format[0m    [K  [0;36mLast log:[0m banner exchange: Connection from 3.89.80.3 port 38664: invalid format[0m    [K  [0;36mLast log:[0m banner exchange: Connection from 3.89.80.3 port 38664: invalid format[0m    [K  [0;36mLast log:[0m banner exchange: Connection from 3.89.80.3 port 38664: invalid format[0m    [K  [0;36mLast log:[0m banner exchange: Connection from 3.89.80.3 port 38664: invalid format[0m    [K  [0;36mLast log:[0m banner exchange: Connection from 3.89.80.3 port 38664: invalid format[0m    [K  [0;36mLast log:[0m === Setup Complete, Agent Ready ===[0m    
+[0;32m[SUCCESS][0m Setup complete detected in logs!
+
+[0;32m[SUCCESS][0m Setup completed successfully
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 6: Getting SSH Connection Details[0m
+[0;36m════════════════════════════════════════[0m
+[0;32m[SUCCESS][0m SSH connection: root@ssh8.vast.ai:11426
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 7: Running SiliconMark QuickMark Benchmark[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Connecting via SSH and running benchmark...
+[0;34m[INFO][0m This typically takes 2-5 minutes...
+Warning: Permanently added '[ssh8.vast.ai]:11426' (ED25519) to the list of known hosts.
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+-rwxr-xr-x 1 root root 32632208 Nov 24 17:34 /workspace/agent
+[0;34m[INFO][0m Executing SiliconMark agent with API key...
+Warning: Permanently added '[ssh8.vast.ai]:11426' (ED25519) to the list of known hosts.
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+[0;32m[SUCCESS][0m Benchmark completed!
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 8: Parsing and Saving Results[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Raw result saved to siliconmark_output.json
+[0;32m[SUCCESS][0m Benchmark Results:
+  [0;36mGPU:[0m               NVIDIA A100-SXM4-80GB (x1)
+  [0;36mBF16 TFLOPS:[0m       283.91
+  [0;36mFP16 TFLOPS:[0m       279
+  [0;36mFP32 TFLOPS:[0m       133.02
+  [0;36mMixed Precision:[0m   264.28 TFLOPS
+  [0;36mMemory BW:[0m         1751.17 GB/s
+  [0;36mPower:[0m             453.44 W
+  [0;36mTemperature:[0m       62 °C
+[0;32m[SUCCESS][0m Results appended to /Users/jai/Documents/GitHub/vastai/quickmark_results.json
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 9: Destroying Instance[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Destroying instance 28411426...
+null
+[0;32m[SUCCESS][0m Instance destroyed
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Benchmark Complete![0m
+[0;36m════════════════════════════════════════[0m
+[0;32mSummary:[0m
+  Machine ID:      43621
+  GPU:             NVIDIA A100-SXM4-80GB
+  QuickMark Score: [0;32m283.91[0m BF16 TFLOPS
+  DLPerf:          131.91601505469367
+  Results saved:   /Users/jai/Documents/GitHub/vastai/quickmark_results.json
+
+[0;36mTip:[0m Refresh your dashboard to see the new data point!
