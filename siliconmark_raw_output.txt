@@ -1,0 +1,381 @@
+waiting on logs for instance 28441395 fetching from https://s3.amazonaws.com/public.vast.ai/instance_logs/24f2e9f61155c5e3d69fa621ae4fa155.log
+Tue Dec  2 21:11:59 UTC 2025
+Get:1 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  InRelease [1581 B]
+Hit:2 http://archive.ubuntu.com/ubuntu jammy InRelease
+Get:3 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+Get:4 http://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+Get:5 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  Packages [2159 kB]
+Get:6 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Get:7 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [3870 kB]
+Get:8 http://archive.ubuntu.com/ubuntu jammy-updates/main i386 Packages [1138 kB]
+Get:9 http://archive.ubuntu.com/ubuntu jammy-updates/restricted i386 Packages [59.8 kB]
+Get:10 http://archive.ubuntu.com/ubuntu jammy-updates/universe i386 Packages [986 kB]
+Get:11 http://archive.ubuntu.com/ubuntu jammy-updates/multiverse amd64 Packages [69.2 kB]
+Get:12 http://archive.ubuntu.com/ubuntu jammy-updates/restricted amd64 Packages [6222 kB]
+Get:13 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1597 kB]
+Get:14 https://ppa.launchpadcontent.net/deadsnakes/nightly/ubuntu jammy InRelease [18.1 kB]
+Get:15 http://archive.ubuntu.com/ubuntu jammy-backports/universe i386 Packages [21.9 kB]
+Get:16 http://archive.ubuntu.com/ubuntu jammy-backports/main i386 Packages [73.6 kB]
+Get:17 http://archive.ubuntu.com/ubuntu jammy-backports/universe amd64 Packages [35.2 kB]
+Get:18 http://archive.ubuntu.com/ubuntu jammy-backports/main amd64 Packages [83.9 kB]
+Get:19 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease [18.1 kB]
+Get:20 https://ppa.launchpadcontent.net/deadsnakes/nightly/ubuntu jammy/main amd64 Packages [25.5 kB]
+Get:21 https://ppa.launchpadcontent.net/deadsnakes/nightly/ubuntu jammy/main i386 Packages [2867 B]
+Get:22 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 Packages [6008 kB]
+Get:23 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy/main i386 Packages [12.0 kB]
+Get:24 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy/main amd64 Packages [38.5 kB]
+Get:25 http://security.ubuntu.com/ubuntu jammy-security/universe i386 Packages [844 kB]
+Get:26 http://security.ubuntu.com/ubuntu jammy-security/restricted i386 Packages [56.4 kB]
+Get:27 http://security.ubuntu.com/ubuntu jammy-security/main i386 Packages [904 kB]
+Get:28 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [3535 kB]
+Get:29 http://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 Packages [60.9 kB]
+Get:30 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [1286 kB]
+Get:31 http://security.ubuntu.com/ubuntu jammy-security/multiverse i386 Packages [5612 B]
+Fetched 29.5 MB in 2s (16.6 MB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+less is already the newest version (590-1ubuntu0.22.04.3).
+locales is already the newest version (2.35-0ubuntu3.11).
+openssh-server is already the newest version (1:8.9p1-3ubuntu0.13).
+software-properties-common is already the newest version (0.99.22.9).
+sudo is already the newest version (1.9.9-1ubuntu2.5).
+tmux is already the newest version (3.2a-4ubuntu0.2).
+wget is already the newest version (1.21.2-2ubuntu1.1).
+The following additional packages will be installed:
+  libcurl4
+The following packages will be upgraded:
+  curl libcurl4
+2 upgraded, 0 newly installed, 0 to remove and 122 not upgraded.
+Need to get 484 kB of archives.
+After this operation, 0 B of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 curl amd64 7.81.0-1ubuntu1.21 [194 kB]
+Get:2 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libcurl4 amd64 7.81.0-1ubuntu1.21 [290 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 484 kB in 0s (14.4 MB/s)
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading d
+Preparing to unpack .../curl_7.81.0-1ubuntu1.21_amd64.deb ...
+Unpacking curl (7.81.0-1ubuntu1.21) over (7.81.0-1ubuntu1.20) ...
+Preparing to unpack .../libcurl4_7.81.0-1ubuntu1.21_amd64.deb ...
+Unpacking libcurl4:amd64 (7.81.0-1ubuntu1.21) over (7.81.0-1ubuntu1.20) ...
+Setting up libcurl4:amd64 (7.81.0-1ubuntu1.21) ...
+Setting up curl (7.81.0-1ubuntu1.21) ...
+Processing triggers for man-db (2.10.2-1) ...
+Processing triggers for libc-bin (2.35-0ubuntu3.9) ...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+git is already the newest version (1:2.34.1-1ubuntu1.15).
+rsync is already the newest version (3.2.7-0ubuntu0.22.04.4).
+0 upgraded, 0 newly installed, 0 to remove and 122 not upgraded.
+rm: cannot remove '/etc/forward_port2': No such file or directory
++ echo '=== QuickMark Setup Starting ==='
+=== QuickMark Setup Starting ===
++ apt-get update
+Server listening on 0.0.0.0 port 22.
+Server listening on :: port 22.
+Tue Dec  2 21:12:05 UTC 2025
+Hit:1 http://archive.ubuntu.com/ubuntu jammy InRelease
+Hit:2 http://security.ubuntu.com/ubuntu jammy-security InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu jammy-updates InRelease
+Hit:4 http://archive.ubuntu.com/ubuntu jammy-backports InRelease
+Hit:5 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  InRelease
+Warning: Permanently added 'ssh5.vast.ai' (ED25519) to the list of known hosts.
+Hit:6 https://ppa.launchpadcontent.net/deadsnakes/nightly/ubuntu jammy InRelease
+Hit:7 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease
+Reading package lists...
++ apt-get install -y libgpgme11 wget
+Reading package lists...
+Building dependency tree...
+Reading state information...
+wget is already the newest version (1.21.2-2ubuntu1.1).
+The following NEW packages will be installed:
+  libgpgme11
+0 upgraded, 1 newly installed, 0 to remove and 122 not upgraded.
+Need to get 136 kB of archives.
+After this operation, 381 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libgpgme11 amd64 1.16.0-1.2ubuntu4.2 [136 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 136 kB in 0s (5410 kB/s)
+Selecting previously unselected package libgpgme11:amd64.
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading d
+Preparing to unpack .../libgpgme11_1.16.0-1.2ubuntu4.2_amd64.deb ...
+Unpacking libgpgme11:amd64 (1.16.0-1.2ubuntu4.2) ...
+Setting up libgpgme11:amd64 (1.16.0-1.2ubuntu4.2) ...
+Processing triggers for libc-bin (2.35-0ubuntu3.9) ...
++ pip3 install pynvml
+Collecting pynvml
+  Downloading pynvml-13.0.1-py3-none-any.whl (28 kB)
+Collecting nvidia-ml-py>=12.0.0
+  Downloading nvidia_ml_py-13.580.82-py3-none-any.whl (49 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 49.0/49.0 KB 5.6 MB/s eta 0:00:00
+Installing collected packages: nvidia-ml-py, pynvml
+Successfully installed nvidia-ml-py-13.580.82 pynvml-13.0.1
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
++ pip3 install torch
+Collecting torch
+  Downloading torch-2.9.1-cp310-cp310-manylinux_2_28_x86_64.whl (899.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 899.8/899.8 MB 3.0 MB/s eta 0:00:00
+Collecting nvidia-nvtx-cu12==12.8.90
+  Downloading nvidia_nvtx_cu12-12.8.90-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (89 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 90.0/90.0 KB 53.3 MB/s eta 0:00:00
+Collecting networkx>=2.5.1
+  Downloading networkx-3.4.2-py3-none-any.whl (1.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.7/1.7 MB 144.3 MB/s eta 0:00:00
+Collecting fsspec>=0.8.5
+  Downloading fsspec-2025.10.0-py3-none-any.whl (200 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 201.0/201.0 KB 105.4 MB/s eta 0:00:00
+Collecting nvidia-cuda-cupti-cu12==12.8.90
+  Downloading nvidia_cuda_cupti_cu12-12.8.90-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (10.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.2/10.2 MB 100.6 MB/s eta 0:00:00
+Collecting nvidia-cuda-nvrtc-cu12==12.8.93
+  Downloading nvidia_cuda_nvrtc_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (88.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 88.0/88.0 MB 25.7 MB/s eta 0:00:00
+Collecting nvidia-cufile-cu12==1.13.1.3
+  Downloading nvidia_cufile_cu12-1.13.1.3-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 144.8 MB/s eta 0:00:00
+Requirement already satisfied: typing-extensions>=4.10.0 in /usr/local/lib/python3.10/dist-packages (from torch) (4.13.2)
+Collecting nvidia-cusparselt-cu12==0.7.1
+  Downloading nvidia_cusparselt_cu12-0.7.1-py3-none-manylinux2014_x86_64.whl (287.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 287.2/287.2 MB 9.4 MB/s eta 0:00:00
+Requirement already satisfied: jinja2 in /usr/local/lib/python3.10/dist-packages (from torch) (3.1.6)
+Collecting filelock
+  Downloading filelock-3.20.0-py3-none-any.whl (16 kB)
+Collecting nvidia-nvjitlink-cu12==12.8.93
+  Downloading nvidia_nvjitlink_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (39.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 39.3/39.3 MB 53.5 MB/s eta 0:00:00
+Collecting nvidia-nvshmem-cu12==3.3.20
+  Downloading nvidia_nvshmem_cu12-3.3.20-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (124.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 124.7/124.7 MB 18.4 MB/s eta 0:00:00
+Collecting nvidia-cusparse-cu12==12.5.8.93
+  Downloading nvidia_cusparse_cu12-12.5.8.93-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (288.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 288.2/288.2 MB 9.8 MB/s eta 0:00:00
+Collecting nvidia-curand-cu12==10.3.9.90
+  Downloading nvidia_curand_cu12-10.3.9.90-py3-none-manylinux_2_27_x86_64.whl (63.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 63.6/63.6 MB 38.1 MB/s eta 0:00:00
+Collecting nvidia-cudnn-cu12==9.10.2.21
+  Downloading nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl (706.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 706.8/706.8 MB 3.9 MB/s eta 0:00:00
+Collecting sympy>=1.13.3
+  Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 136.4 MB/s eta 0:00:00
+Collecting nvidia-cusolver-cu12==11.7.3.90
+  Downloading nvidia_cusolver_cu12-11.7.3.90-py3-none-manylinux_2_27_x86_64.whl (267.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 267.5/267.5 MB 9.8 MB/s eta 0:00:00
+Collecting nvidia-cufft-cu12==11.3.3.83
+  Downloading nvidia_cufft_cu12-11.3.3.83-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (193.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 193.1/193.1 MB 12.5 MB/s eta 0:00:00
+Collecting triton==3.5.1
+  Downloading triton-3.5.1-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (170.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 170.3/170.3 MB 14.4 MB/s eta 0:00:00
+Collecting nvidia-cublas-cu12==12.8.4.1
+  Downloading nvidia_cublas_cu12-12.8.4.1-py3-none-manylinux_2_27_x86_64.whl (594.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 594.3/594.3 MB 4.5 MB/s eta 0:00:00
+Collecting nvidia-cuda-runtime-cu12==12.8.90
+  Downloading nvidia_cuda_runtime_cu12-12.8.90-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (954 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 954.8/954.8 KB 118.1 MB/s eta 0:00:00
+Collecting nvidia-nccl-cu12==2.27.5
+  Downloading nvidia_nccl_cu12-2.27.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (322.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 322.3/322.3 MB 8.3 MB/s eta 0:00:00
+Collecting mpmath<1.4,>=1.1.0
+  Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 KB 28.8 MB/s eta 0:00:00
+Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.10/dist-packages (from jinja2->torch) (3.0.2)
+Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, nvidia-cusolver-cu12, torch
+Successfully installed filelock-3.20.0 fsspec-2025.10.0 mpmath-1.3.0 networkx-3.4.2 nvidia-cublas-cu12-12.8.4.1 nvidia-cuda-cupti-cu12-12.8.90 nvidia-cuda-nvrtc-cu12-12.8.93 nvidia-cuda-runtime-cu12-12.8.90 nvidia-cudnn-cu12-9.10.2.21 nvidia-cufft-cu12-11.3.3.83 nvidia-cufile-cu12-1.13.1.3 nvidia-curand-cu12-10.3.9.90 nvidia-cusolver-cu12-11.7.3.90 nvidia-cusparse-cu12-12.5.8.93 nvidia-cusparselt-cu12-0.7.1 nvidia-nccl-cu12-2.27.5 nvidia-nvjitlink-cu12-12.8.93 nvidia-nvshmem-cu12-3.3.20 nvidia-n
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
++ cd /workspace
++ wget -q -O ./agent https://downloads.silicondata.com/agent
++ chmod +x ./agent
++ echo '=== Setup Complete, Running Benchmark ==='
+=== Setup Complete, Running Benchmark ===
++ ./agent -api-key eyJhbGciOiJIUzI1NiIsImtpZCI6IlNpbGljb25fe2NvZGV9IiwidHlwIjoiand0X2FwcF90b2tlbiJ9.eyJqb2JfaWQiOjE5OTU5NjQxNDQ0NjUwOTI2MDgsImVtYWlsIjoidG9qYWlndXB0YUBnbWFpbC5jb20iLCJleHAiOjE3NjQ3OTYzMDl9.qmHnNY2uh1E1xZ1zZWZkoZE9yfyJSwQ4tXtDf-2iPOk
+Trace ID: 4806d7074efd0f678e133f1b67011fac
+{"time":"2025-12-02T21:13:52.075347999Z","level":"INFO","msg":"Python executable verified: python3"}
+{"time":"2025-12-02T21:13:55.434978296Z","level":"INFO","msg":"Packages verified: torch 2.9.1,pynvml 13.0.1,numpy 2.2.5"}
+{"time":"2025-12-02T21:13:57.839710016Z","level":"INFO","msg":"Environment validated"}
+{"time":"2025-12-02T21:13:58.986381554Z","level":"INFO","msg":"Benchmark quick_mark validated successfully"}
+{"time":"2025-12-02T21:13:59.444928916Z","level":"INFO","msg":"QuickMark: Running system inventory"}
+{"time":"2025-12-02T21:14:00.568692941Z","level":"INFO","msg":"Successfully parsed 2 GPU infos"}
+{"time":"2025-12-02T21:14:03.093994008Z","level":"INFO","msg":"Collected location info: US"}
+{"time":"2025-12-02T21:14:25.986439588Z","level":"INFO","msg":"Collected system information"}
+{"time":"2025-12-02T21:14:25.986515777Z","level":"INFO","msg":"Collected complete system information"}
+{"time":"2025-12-02T21:14:26.003911456Z","level":"INFO","msg":"Successfully executed action run_inventory for benchmark quick_mark"}
+{"time":"2025-12-02T21:14:26.954951036Z","level":"INFO","msg":"QuickMark: Running GPU benchmark"}
+{"time":"2025-12-02T21:14:27.012664477Z","level":"INFO","msg":"Data collected: GPU Count = 2"}
+{"time":"2025-12-02T21:14:27.012734186Z","level":"INFO","msg":"Benchmarking GPU 0"}
+{"time":"2025-12-02T21:15:11.972502698Z","level":"INFO","msg":"Benchmarking GPU 1"}
+{"time":"2025-12-02T21:15:56.993781501Z","level":"INFO","msg":"Status Update: benchmarking system"}
+{"time":"2025-12-02T21:16:46.418517625Z","level":"INFO","msg":"QuickMark benchmark completed successfully"}
+{"time":"2025-12-02T21:16:46.418587964Z","level":"INFO","msg":"Successfully executed action run_benchmark for benchmark quick_mark"}
+{"time":"2025-12-02T21:16:52.313023388Z","level":"INFO","msg":"Successfully completed agent execution"}
+{"time":"2025-12-02T21:16:52.313136417Z","level":"INFO","msg":"GPU Benchmark completed successfully"}
+{"time":"2025-12-02T21:16:52.313160627Z","level":"INFO","msg":"SiliconMark(TM) Agent execution complete"}
+{
+  "benchmark_results": {
+    "quick_mark": {
+      "benchmark_id": "quick_mark",
+      "benchmark_name": "QuickMark",
+      "config": {},
+      "ended_at": "2025-12-02T21:16:46.418583Z",
+      "error_message": null,
+      "results": {
+        "aggregate_results": {
+          "allreduce_bandwidth_gbs": 182.36,
+          "bf16_tflops": 530.1,
+          "broadcast_bandwidth_gbs": 267.43,
+          "device_to_host_bandwidth_gbs": 7.49,
+          "fp16_tflops": 521.34,
+          "fp16_tflops_per_peak_watt": 0.615,
+          "fp32_cuda_core_tflops": 38.1,
+          "fp32_tflops": 246.34,
+          "fp32_tflops_per_peak_watt": 0.291,
+          "gpu_bandwidth_matrix": {
+            "gpu0_to_gpu1": {
+              "connection_type": "nvlink_v4_12x",
+              "duplex_gbs": 276.72,
+              "simplex_gbs": 273.95
+            }
+          },
+          "gpu_id": "aggregate",
+          "host_to_device_bandwidth_gbs": 21.5,
+          "memory_bandwidth_gbs": 3475.46,
+          "mixed_precision_tflops": 470.05,
+          "power_consumption_watts": 847.39,
+          "temperature_centigrade": 65
+        },
+        "test_results": [
+          {
+            "bf16_tflops": 268.47,
+            "device_to_host_bandwidth_gbs": 20.8,
+            "fp16_tflops": 263.78,
+            "fp32_cuda_core_tflops": 19.05,
+            "fp32_tflops": 124.54,
+            "gpu_id": "GPU-cf2320de-ae7a-6e90-d8b0-8d43e84483c9",
+            "host_to_device_bandwidth_gbs": 20.81,
+            "kernel_launch_overhead_us": 6.28,
+            "l2_bandwidth_gbs": 389.17,
+            "memory_bandwidth_gbs": 1753.35,
+            "mixed_precision_tflops": 252.63,
+            "power_consumption_watts": 437.7,
+            "temperature_centigrade": 55
+          },
+          {
+            "bf16_tflops": 266.81,
+            "device_to_host_bandwidth_gbs": 20.14,
+            "fp16_tflops": 261.45,
+            "fp32_cuda_core_tflops": 19.08,
+            "fp32_tflops": 124.04,
+            "gpu_id": "GPU-50481797-dfc8-f9ea-6a25-82b8b5bc3acb",
+            "host_to_device_bandwidth_gbs": 19.79,
+            "kernel_launch_overhead_us": 6.11,
+            "l2_bandwidth_gbs": 384.42,
+            "memory_bandwidth_gbs": 1751.49,
+            "mixed_precision_tflops": 250.5,
+            "power_consumption_watts": 390.32,
+            "temperature_centigrade": 62
+          }
+        ],
+        "timestamp": "2025-12-02T21:16:46.418581004Z"
+      },
+      "started_at": "2025-12-02T21:14:26.954862Z",
+      "state": "completed"
+    }
+  },
+  "company_name": "OTCR",
+  "configuration_id": "2fb951b1-aada-5dcd-be27-14ce572071b0",
+  "created_at": "2025-12-02T21:13:59.188124Z",
+  "ended_at": "2025-12-02T21:16:46.540719Z",
+  "failed_message": null,
+  "gpu_count": 2,
+  "gpu_model": "NVIDIA A100-SXM4-80GB",
+  "id": "1995964686662770688",
+  "inventory": {
+    "config_id": "2fb951b1-aada-5dcd-be27-14ce572071b0",
+    "cpu": {
+      "arch": "x86_64",
+      "count": 64,
+      "os": "ubuntu 22.04",
+      "processor": "AMD EPYC 7513 32-Core Processor",
+      "virtualization_type": "guest"
+    },
+    "disk": {
+      "model": "SAMSUNG MZWMO15THCLF-00AW7",
+      "size_gb": 14336,
+      "technology": "SSD"
+    },
+    "gpu": {
+      "count": 2,
+      "cuda_version": "12.8",
+      "driver_version": "570.195.03",
+      "memory_gb": 80,
+      "model": "NVIDIA A100-SXM4-80GB",
+      "network_type": null,
+      "vendor": "NVIDIA"
+    },
+    "location": "US",
+    "machine_id": "71bf7d65-c13c-582f-b0ac-53c6e10f372c",
+    "memory": {
+      "total_gb": 1385,
+      "type": "Unknown"
+    },
+    "network": {
+      "download_speed_mbps": 8996,
+      "machine_ip": "172.17.0.4",
+      "open_ports": 2,
+      "upload_speed_mbps": 8586
+    }
+  },
+  "job_id": "1995964144465092608",
+  "machine_ip": null,
+  "machine_uuid": "71bf7d65-c13c-582f-b0ac-53c6e10f372c",
+  "manufacturer_gpu_spec": {
+    "bandwidth": "2040.0",
+    "fp16": "77.97",
+    "fp32": "19.49"
+  },
+  "pdf_report_url": "s3://sd-siliconmark-output/O006/1995964144465092608/pdf_reports/1995964686662770688.pdf",
+  "started_at": "2025-12-02T21:13:59.184939Z",
+  "state": "completed"
+}
++ echo '=== QUICKMARK_BENCHMARK_COMPLETE ==='
+=== QUICKMARK_BENCHMARK_COMPLETE ===da

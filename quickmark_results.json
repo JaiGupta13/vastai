@@ -439,5 +439,26 @@
       "power_consumption_watts": 41.7,
       "temperature_centigrade": 68
     }
+  },
+  {
+    "machine_id": 28441395,
+    "host_id": 94202,
+    "quickmark_score": 530.1,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T21:16:46.418583Z",
+    "gpu_model": "NVIDIA A100-SXM4-80GB",
+    "gpu_count": 2,
+    "dlperf_at_benchmark": 257.5,
+    "notes": "Automated benchmark via run_quickmark.sh",
+    "siliconmark_job_id": "1995964144465092608",
+    "aggregate_results": {
+      "bf16_tflops": 530.1,
+      "fp16_tflops": 521.34,
+      "fp32_tflops": 246.34,
+      "mixed_precision_tflops": 470.05,
+      "memory_bandwidth_gbs": 3475.46,
+      "power_consumption_watts": 847.39,
+      "temperature_centigrade": 65
+    }
   }
 ]

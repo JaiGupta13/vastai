@@ -428,6 +428,11 @@
     <script>
         const DATACENTER_KEYWORDS = ['A100', 'H100', 'H200', 'B200'];
         const MIN_POINTS_FOR_CORRELATION = 4;
+        
+        // Special combined model keys for A100 variants
+        const COMBINED_A100_40GB = 'A100 40GB (all variants)';
+        const COMBINED_A100_80GB = 'A100 80GB (all variants)';
+        const COMBINED_A100_ALL = 'A100 (all variants)';
         // NON_GPU_SPECS now reference per-GPU scaled values
         const NON_GPU_SPECS = [
             { key: 'dph_per_gpu', label: 'Price per GPU-Hour ($)', description: 'Hourly price divided by GPU count', getValue: d => d.dph_per_gpu },
@@ -628,7 +633,9 @@
             groupedByModel = groupBy(expandedData, item => item.gpu_name);
             perModelSummaries = buildPerModelSummaries(groupedByModel);
 
-            populateModelSelect(Object.keys(groupedByModel));
+            // Include combined A100 options in the model list
+            const allModelKeys = Object.keys(perModelSummaries);
+            populateModelSelect(allModelKeys);
             createDistributionChart();
             createGpuLeaderboardChart();
 
@@ -752,8 +759,55 @@
             }, {});
         }
 
+        // Classify A100 variant based on GPU name and VRAM
+        function classifyA100Variant(gpuName, vramMb) {
+            const upper = (gpuName || '').toUpperCase();
+            if (!upper.includes('A100')) return null;
+            
+            // Priority 1: Check for explicit VRAM size in name (most reliable)
+            if (upper.includes('80GB')) return '80GB';
+            if (upper.includes('40GB')) return '40GB';
+            
+            // Priority 2: Fall back to VRAM detection from offer data
+            if (vramMb != null) {
+                // 80GB ~= 81920 MB, 40GB ~= 40960 MB
+                if (vramMb > 60000) return '80GB';
+                if (vramMb > 30000 && vramMb <= 50000) return '40GB';
+            }
+            
+            // Priority 3: Check form factor keywords (least reliable - SXM can be either size)
+            // Only use PCIe as indicator since it's typically 40GB
+            if (upper.includes('PCIE') && !upper.includes('SXM')) return '40GB';
+            
+            // Default: can't determine
+            return 'unknown';
+        }
+
+        // Check if a GPU name is an A100
+        function isA100(gpuName) {
+            return (gpuName || '').toUpperCase().includes('A100');
+        }
+
+        // Get A100 variant classification for quickmark matching
+        function getA100VariantForQuickmark(gpuModel) {
+            const upper = (gpuModel || '').toUpperCase();
+            if (!upper.includes('A100')) return null;
+            
+            // Priority 1: Check for explicit VRAM size in name
+            if (upper.includes('80GB')) return '80GB';
+            if (upper.includes('40GB')) return '40GB';
+            
+            // Priority 2: Infer from form factor (fallback only)
+            // Note: A100 SXM4 can be either 40GB or 80GB, so we can't reliably infer
+            if (upper.includes('PCIE') && !upper.includes('SXM')) return '40GB';  // PCIe is typically 40GB
+            
+            return 'unknown';
+        }
+
         function buildPerModelSummaries(groups) {
             const summaries = {};
+            
+            // First, build summaries for individual GPU models
             Object.entries(groups).forEach(([model, dataset]) => {
                 // Now dlperf is per-GPU, and prices are per-GPU
                 const dlperfValues = dataset.map(item => item.dlperf);
@@ -777,7 +831,111 @@
                     quickmarkStats: computeStats(quickmarkEntries.map(entry => entry.score))
                 };
             });
+            
+            // Build combined A100 summaries
+            const a100_40gb_data = [];
+            const a100_80gb_data = [];
+            const a100_all_data = [];
+            
+            Object.entries(groups).forEach(([model, dataset]) => {
+                if (!isA100(model)) return;
+                
+                dataset.forEach(item => {
+                    const variant = classifyA100Variant(item.gpu_name, item.gpu_ram);
+                    a100_all_data.push(item);
+                    
+                    if (variant === '40GB') {
+                        a100_40gb_data.push(item);
+                    } else if (variant === '80GB') {
+                        a100_80gb_data.push(item);
+                    }
+                });
+            });
+            
+            // Add combined A100 40GB summary
+            if (a100_40gb_data.length > 0) {
+                const quickmarkEntries = getQuickmarkEntriesForCombinedA100('40GB');
+                const uniqueMachineIds = new Set(a100_40gb_data.map(item => item.machine_id));
+                summaries[COMBINED_A100_40GB] = {
+                    dataset: a100_40gb_data,
+                    count: a100_40gb_data.length,
+                    uniqueInstances: uniqueMachineIds.size,
+                    dlperfStats: computeStats(a100_40gb_data.map(item => item.dlperf)),
+                    priceStats: computeStats(a100_40gb_data.map(item => item.dph_per_gpu).filter(isFinite), { skipZero: true }),
+                    correlations: computeCorrelations(a100_40gb_data, NON_GPU_SPECS),
+                    quickmarkEntries,
+                    quickmarkStats: computeStats(quickmarkEntries.map(entry => entry.score)),
+                    isCombined: true
+                };
+            }
+            
+            // Add combined A100 80GB summary
+            if (a100_80gb_data.length > 0) {
+                const quickmarkEntries = getQuickmarkEntriesForCombinedA100('80GB');
+                const uniqueMachineIds = new Set(a100_80gb_data.map(item => item.machine_id));
+                summaries[COMBINED_A100_80GB] = {
+                    dataset: a100_80gb_data,
+                    count: a100_80gb_data.length,
+                    uniqueInstances: uniqueMachineIds.size,
+                    dlperfStats: computeStats(a100_80gb_data.map(item => item.dlperf)),
+                    priceStats: computeStats(a100_80gb_data.map(item => item.dph_per_gpu).filter(isFinite), { skipZero: true }),
+                    correlations: computeCorrelations(a100_80gb_data, NON_GPU_SPECS),
+                    quickmarkEntries,
+                    quickmarkStats: computeStats(quickmarkEntries.map(entry => entry.score)),
+                    isCombined: true
+                };
+            }
+            
+            // Add combined A100 (all) summary
+            if (a100_all_data.length > 0) {
+                const quickmarkEntries = getQuickmarkEntriesForCombinedA100('all');
+                const uniqueMachineIds = new Set(a100_all_data.map(item => item.machine_id));
+                summaries[COMBINED_A100_ALL] = {
+                    dataset: a100_all_data,
+                    count: a100_all_data.length,
+                    uniqueInstances: uniqueMachineIds.size,
+                    dlperfStats: computeStats(a100_all_data.map(item => item.dlperf)),
+                    priceStats: computeStats(a100_all_data.map(item => item.dph_per_gpu).filter(isFinite), { skipZero: true }),
+                    correlations: computeCorrelations(a100_all_data, NON_GPU_SPECS),
+                    quickmarkEntries,
+                    quickmarkStats: computeStats(quickmarkEntries.map(entry => entry.score)),
+                    isCombined: true
+                };
+            }
+            
             return summaries;
+        }
+        
+        // Get quickmark entries for combined A100 variants
+        function getQuickmarkEntriesForCombinedA100(variant) {
+            return quickmarkData
+                .filter(entry => {
+                    const gpuModel = entry.gpu_model || '';
+                    if (!gpuModel.toUpperCase().includes('A100')) return false;
+                    
+                    if (variant === 'all') return true;
+                    
+                    const entryVariant = getA100VariantForQuickmark(gpuModel);
+                    return entryVariant === variant;
+                })
+                .map(entry => {
+                    const rawScore = Number(entry.quickmark_score);
+                    const numGpus = entry.gpu_count || 1;
+                    const scorePerGpu = rawScore / numGpus;
+                    const dlperfAtBenchmark = entry.dlperf_at_benchmark != null ? Number(entry.dlperf_at_benchmark) : null;
+                    const dlperfPerGpu = dlperfAtBenchmark != null ? dlperfAtBenchmark / numGpus : null;
+                    return {
+                        score: scorePerGpu,
+                        raw_score: rawScore,
+                        dlperf: dlperfPerGpu,
+                        machine_id: entry.machine_id,
+                        host_id: entry.host_id,
+                        measured_at: entry.measured_at,
+                        notes: entry.notes || '',
+                        gpu_count: numGpus
+                    };
+                })
+                .filter(entry => entry.dlperf != null && entry.dlperf > 0);
         }
 
         function computeStats(values, options = {}) {
@@ -892,23 +1050,61 @@
         function populateModelSelect(models) {
             const select = document.getElementById('gpu-model-select');
             select.innerHTML = '';
-            const sortedModels = models
+            
+            // Separate combined A100 options from individual models
+            const combinedA100Options = [COMBINED_A100_40GB, COMBINED_A100_80GB, COMBINED_A100_ALL]
+                .filter(name => perModelSummaries[name])
                 .map(name => {
                     const summary = perModelSummaries[name];
                     return { 
                         name, 
                         gpuCount: summary?.count || 0,
-                        instanceCount: summary?.uniqueInstances || 0 
+                        instanceCount: summary?.uniqueInstances || 0,
+                        isCombined: true
+                    };
+                });
+            
+            // Individual models (exclude combined A100 options)
+            const individualModels = models
+                .filter(name => ![COMBINED_A100_40GB, COMBINED_A100_80GB, COMBINED_A100_ALL].includes(name))
+                .map(name => {
+                    const summary = perModelSummaries[name];
+                    return { 
+                        name, 
+                        gpuCount: summary?.count || 0,
+                        instanceCount: summary?.uniqueInstances || 0,
+                        isCombined: false
                     };
                 })
                 .sort((a, b) => b.gpuCount - a.gpuCount);
 
-            sortedModels.forEach(entry => {
+            // Add combined A100 options first (if any exist)
+            if (combinedA100Options.length > 0) {
+                const optGroup = document.createElement('optgroup');
+                optGroup.label = '── A100 Combined Views ──';
+                
+                combinedA100Options.forEach(entry => {
+                    const option = document.createElement('option');
+                    option.value = entry.name;
+                    option.textContent = `${entry.name} (${entry.gpuCount} GPUs from ${entry.instanceCount} instances)`;
+                    optGroup.appendChild(option);
+                });
+                
+                select.appendChild(optGroup);
+            }
+            
+            // Add individual models
+            const individualGroup = document.createElement('optgroup');
+            individualGroup.label = '── Individual GPU Models ──';
+            
+            individualModels.forEach(entry => {
                 const option = document.createElement('option');
                 option.value = entry.name;
                 option.textContent = `${entry.name} (${entry.gpuCount} GPUs from ${entry.instanceCount} instances)`;
-                select.appendChild(option);
+                individualGroup.appendChild(option);
             });
+            
+            select.appendChild(individualGroup);
 
             if (!select.dataset.bound) {
                 select.addEventListener('change', event => {
