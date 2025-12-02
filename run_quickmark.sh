@@ -385,13 +385,23 @@ log_success "Benchmark completed!"
 # ============================================================================
 log_step "Step 8: Parsing and Saving Results"
 
-# Extract the JSON result from the output (last JSON object)
-RESULT_JSON=$(echo "$BENCHMARK_OUTPUT" | grep -E '^\{' | tail -1)
+# Extract the JSON result from the output
+# The final result is a multi-line pretty-printed JSON that starts with '{' alone on a line
+# (unlike the log lines which are single-line JSON like {"time":"...","level":"INFO",...})
+RESULT_JSON=$(echo "$BENCHMARK_OUTPUT" | awk '
+/^{$/ { found=1; json="" }
+found { json = json $0 "\n" }
+END { printf "%s", json }
+')
 
 if [[ -z "$RESULT_JSON" ]] || ! echo "$RESULT_JSON" | jq . > /dev/null 2>&1; then
     log_error "Could not parse benchmark results"
     log_info "Raw output saved for debugging"
     echo "$BENCHMARK_OUTPUT" > "${SCRIPT_DIR}/siliconmark_raw_output.txt"
+    
+    # Show what we tried to extract for debugging
+    log_info "Attempted to extract JSON starting with standalone '{'"
+    log_info "If this fails, the output format may have changed"
     exit 1
 fi
 
