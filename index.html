@@ -768,6 +768,8 @@
                         seenMachines.add(item.machine_id);
                         const quickmark = item.quickmark_entry;
                         if (!quickmark || quickmark.quickmark_score == null || isNaN(quickmark.quickmark_score)) return null;
+                        // Ignore quickmark scores of 0 (benchmark didn't run properly)
+                        if (Number(quickmark.quickmark_score) === 0) return null;
                         return {
                             score: Number(quickmark.quickmark_score),
                             dlperf: item.dlperf,
