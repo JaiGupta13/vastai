@@ -680,7 +680,7 @@
         }
 
         function normalizeRecord(item, quickmarkMap) {
-            const quickmark = quickmarkMap.get(`machine-${item.machine_id}`) || quickmarkMap.get(`host-${item.host_id}`) || null;
+            const quickmark = quickmarkMap.get(`machine-${item.machine_id}`) || null;
             return {
                 ...item,
                 gpu_name: (item.gpu_name || 'Unknown GPU').trim(),
@@ -730,9 +730,6 @@
                 const normalized = normalizeQuickmarkEntry(entry);
                 if (entry.machine_id != null) {
                     map.set(`machine-${entry.machine_id}`, normalized);
-                }
-                if (entry.host_id != null) {
-                    map.set(`host-${entry.host_id}`, normalized);
                 }
             });
             return map;
