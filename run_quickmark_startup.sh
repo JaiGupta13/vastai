@@ -326,15 +326,13 @@ while [[ $WAITED -lt $MAX_WAIT ]]; do
     # Count current log lines
     CURRENT_LOG_LINES=$(echo "$LOGS" | wc -l | tr -d ' ')
     
-    # If we have new log lines, show them
+    # If we have new log lines, show only the new ones
     if [[ "$CURRENT_LOG_LINES" -gt "$LAST_LOG_LINES" ]]; then
+        # Calculate how many new lines we have
+        NEW_LINES_COUNT=$((CURRENT_LOG_LINES - LAST_LOG_LINES))
         echo ""
-        echo -e "${CYAN}════════════════════════════════════════${NC}"
-        echo -e "${CYAN}  Log output (${WAITED}s elapsed)${NC}"
-        echo -e "${CYAN}════════════════════════════════════════${NC}"
-        # Show all logs (or just new lines if you prefer)
-        echo "$LOGS"
-        echo -e "${CYAN}════════════════════════════════════════${NC}"
+        # Only show the new lines (tail from the end)
+        echo "$LOGS" | tail -n "$NEW_LINES_COUNT"
         LAST_LOG_LINES=$CURRENT_LOG_LINES
     fi
     
