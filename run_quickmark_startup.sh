@@ -270,26 +270,39 @@ log_step "Step 5: Waiting for Instance to be Ready"
 MAX_WAIT=300  # 5 minutes
 WAITED=0
 POLL_INTERVAL=10
+LAST_STATUS=""
 
 while [[ $WAITED -lt $MAX_WAIT ]]; do
     INSTANCE_INFO=$(vast show instance "$INSTANCE_ID" --raw 2>/dev/null || echo "{}")
     STATUS=$(echo "$INSTANCE_INFO" | jq -r '.actual_status // .status // "unknown"')
     
-    echo -e "  Status: ${YELLOW}$STATUS${NC} (waited ${WAITED}s)"
+    if [[ "$STATUS" != "$LAST_STATUS" ]]; then
+        echo ""
+        log_info "Status changed to: $STATUS"
+        LAST_STATUS="$STATUS"
+    fi
     
     if [[ "$STATUS" == "running" ]]; then
+        echo ""
         log_success "Instance is running!"
         break
     elif [[ "$STATUS" == "exited" ]] || [[ "$STATUS" == "error" ]]; then
+        echo ""
         log_error "Instance failed to start (status: $STATUS)"
         vast logs "$INSTANCE_ID" 2>/dev/null | tail -50 || true
         exit 1
     fi
     
-    sleep $POLL_INTERVAL
+    # Live counter within the poll interval
+    for ((i=0; i<POLL_INTERVAL; i++)); do
+        CURRENT_TIME=$((WAITED + i))
+        printf "\r  ${CYAN}⏱${NC}  Waiting: ${YELLOW}%3ds${NC} / ${MAX_WAIT}s | Status: ${YELLOW}%s${NC}    " "$CURRENT_TIME" "$STATUS"
+        sleep 1
+    done
     WAITED=$((WAITED + POLL_INTERVAL))
 done
 
+echo ""
 if [[ $WAITED -ge $MAX_WAIT ]]; then
     log_error "Timeout waiting for instance to start"
     exit 1
@@ -304,19 +317,25 @@ MAX_WAIT=900  # 15 minutes max wait (benchmark can take a while)
 WAITED=0
 POLL_INTERVAL=10
 BENCHMARK_OUTPUT=""
+LAST_LOG_LINES=0
 
 while [[ $WAITED -lt $MAX_WAIT ]]; do
     # Check logs for completion marker
     LOGS=$(vast logs "$INSTANCE_ID" 2>/dev/null || echo "")
     
-    # Show the last non-empty line of logs
-    LAST_LINE=$(echo "$LOGS" | grep -v '^$' | tail -1)
-    if [[ -n "$LAST_LINE" ]]; then
-        # Clear line and show last log (truncate if too long)
-        DISPLAY_LINE="${LAST_LINE:0:80}"
-        printf "\r\033[K  ${CYAN}[${WAITED}s]${NC} $DISPLAY_LINE"
-    else
-        printf "\r\033[K  ${YELLOW}Waiting for logs... (${WAITED}s / ${MAX_WAIT}s)${NC}"
+    # Count current log lines
+    CURRENT_LOG_LINES=$(echo "$LOGS" | wc -l | tr -d ' ')
+    
+    # If we have new log lines, show them
+    if [[ "$CURRENT_LOG_LINES" -gt "$LAST_LOG_LINES" ]]; then
+        echo ""
+        echo -e "${CYAN}════════════════════════════════════════${NC}"
+        echo -e "${CYAN}  Log output (${WAITED}s elapsed)${NC}"
+        echo -e "${CYAN}════════════════════════════════════════${NC}"
+        # Show all logs (or just new lines if you prefer)
+        echo "$LOGS"
+        echo -e "${CYAN}════════════════════════════════════════${NC}"
+        LAST_LOG_LINES=$CURRENT_LOG_LINES
     fi
     
     if echo "$LOGS" | grep -q "QUICKMARK_BENCHMARK_COMPLETE"; then
@@ -326,7 +345,12 @@ while [[ $WAITED -lt $MAX_WAIT ]]; do
         break
     fi
     
-    sleep $POLL_INTERVAL
+    # Live counter within the poll interval
+    for ((i=0; i<POLL_INTERVAL; i++)); do
+        CURRENT_TIME=$((WAITED + i))
+        printf "\r  ${CYAN}⏱${NC}  Monitoring logs: ${YELLOW}%3ds${NC} / ${MAX_WAIT}s | Log lines: ${YELLOW}%d${NC}    " "$CURRENT_TIME" "$CURRENT_LOG_LINES"
+        sleep 1
+    done
     WAITED=$((WAITED + POLL_INTERVAL))
 done
 
