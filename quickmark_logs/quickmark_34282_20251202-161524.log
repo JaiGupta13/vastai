@@ -1,0 +1,78 @@
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 0: Validating Prerequisites[0m
+[0;36m════════════════════════════════════════[0m
+[0;32m[SUCCESS][0m All required tools found
+[0;32m[SUCCESS][0m SiliconData credentials configured
+[0;32m[SUCCESS][0m Vast.ai API key configured
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 1: Get Machine ID[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Using machine ID from argument: 34282
+[0;32m[SUCCESS][0m Target machine ID: 34282
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 2: Finding Offer for Machine 34282[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Searching for available offers on machine 34282...
+[0;32m[SUCCESS][0m Found offer:
+  [0;36mOffer ID:[0m     28439750
+  [0;36mGPU:[0m          1 x A100 SXM4
+  [0;36mDLPerf:[0m       95.44098961204517
+  [0;36mPrice:[0m        $0.584364602962963/hr
+  [0;36mLocation:[0m     The Netherlands, NL
+  [0;36mHost ID:[0m      37070
+[0;34m[INFO][0m Proceeding automatically to rent this instance...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 3: Creating SiliconMark Job[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Job name: quickmark-machine-34282-20251202-161525
+[0;34m[INFO][0m Logging into SiliconData as tojaigupta@gmail.com...
+[0;32m[SUCCESS][0m Got SiliconData auth token
+[0;34m[INFO][0m Creating SiliconMark job...
+[0;32m[SUCCESS][0m SiliconMark job created
+  [0;36mJob ID:[0m    1995980165544550400
+  [0;36mAPI Key:[0m   eyJhbGciOiJIUzI1NiIsImtpZCI6IlNpbGljb25f...
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 4: Creating Vast.ai Instance[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Creating instance from offer 28439750...
+[0;34m[INFO][0m Using image: vastai/pytorch
+{
+ "new_contract": 28442774,
+ "success": true
+}
+[0;32m[SUCCESS][0m Instance created: 28442774
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 5: Waiting for Instance to be Ready[0m
+[0;36m════════════════════════════════════════[0m
+  Status: [1;33munknown[0m (waited 0s)
+  Status: [1;33mloading[0m (waited 10s)
+  Status: [1;33mrunning[0m (waited 20s)
+[0;32m[SUCCESS][0m Instance is running!
+[0;34m[INFO][0m Waiting for onstart script to complete...
+[0;34m[INFO][0m Monitoring logs for 'Setup Complete' message...
+[K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Warning: Permanently added 'ssh7.vast.ai' (ED25519) to the list of known hosts.[0m    [K  [0;36mLast log:[0m   Downloading nvidia_cufft_cu12-11.3.3.83-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (193.1 MB)[0m    [K  [0;36mLast log:[0m Warning: Permanently added 'ssh7.vast.ai' (ED25519) to the list of known hosts.[0m    [K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.10/dist-packages (from jinja2->torch) (3.0.2)[0m    [K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Error: remote port forwarding failed for listen port 12774[0m    [K  [0;36mLast log:[0m Warning: Permanently added 'ssh7.vast.ai' (ED25519) to the list of known hosts.[0m    [K  [0;36mLast log:[0m Warning: Permanently added 'ssh7.vast.ai' (ED25519) to the list of known hosts.[0m    [K  [0;36mLast log:[0m Warning: Permanently added 'ssh7.vast.ai' (ED25519) to the list of known hosts.[0m    [K  [0;36mLast log:[0m Warning: Permanently added 'ssh7.vast.ai' (ED25519) to the list of known hosts.[0m    [K  [0;36mLast log:[0m Tue Dec  2 22:17:51 UTC 2025[0m    [K  [0;36mLast log:[0m Warning: Permanently added 'ssh7.vast.ai' (ED25519) to the list of known hosts.[0m    
+[0;32m[SUCCESS][0m Setup complete detected in logs!
+
+[0;32m[SUCCESS][0m Setup completed successfully
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 6: Getting SSH Connection Details[0m
+[0;36m════════════════════════════════════════[0m
+[0;32m[SUCCESS][0m SSH connection: root@ssh7.vast.ai:12774
+
+[0;36m════════════════════════════════════════[0m
+[0;36m  Step 7: Running SiliconMark QuickMark Benchmark[0m
+[0;36m════════════════════════════════════════[0m
+[0;34m[INFO][0m Connecting via SSH and running benchmark...
+[0;34m[INFO][0m This typically takes 2-5 minutes...
+Connection closed by 3.80.12.95 port 12774
+[1;33m[WARN][0m Agent not found, downloading...
+Connection closed by 3.80.12.95 port 12774
+[1;33m[WARN][0m Cleaning up: destroying instance 28442774...
+null

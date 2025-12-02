@@ -523,5 +523,89 @@
       "power_consumption_watts": 0,
       "temperature_centigrade": 0
     }
+  },
+  {
+    "machine_id": 43416,
+    "host_id": 94202,
+    "quickmark_score": 265.8,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:25:38.668170Z",
+    "gpu_model": "NVIDIA A100-SXM4-80GB",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 128.76476030838012,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995981872429146112",
+    "aggregate_results": {
+      "bf16_tflops": 265.8,
+      "fp16_tflops": 260.82,
+      "fp32_tflops": 124.18,
+      "mixed_precision_tflops": 249.63,
+      "memory_bandwidth_gbs": 1751.38,
+      "power_consumption_watts": 404.87,
+      "temperature_centigrade": 55
+    }
+  },
+  {
+    "machine_id": 43995,
+    "host_id": 94202,
+    "quickmark_score": 259.19,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:25:55.537652Z",
+    "gpu_model": "NVIDIA A100-SXM4-80GB",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 128.62481371990165,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995981872185876480",
+    "aggregate_results": {
+      "bf16_tflops": 259.19,
+      "fp16_tflops": 254.69,
+      "fp32_tflops": 121.05,
+      "mixed_precision_tflops": 243.83,
+      "memory_bandwidth_gbs": 1753.18,
+      "power_consumption_watts": 498.14,
+      "temperature_centigrade": 54
+    }
+  },
+  {
+    "machine_id": 39209,
+    "host_id": 33081,
+    "quickmark_score": 266.93,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:26:21.761073Z",
+    "gpu_model": "NVIDIA A100-SXM4-40GB",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 94.29573119937139,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995981872060047360",
+    "aggregate_results": {
+      "bf16_tflops": 266.93,
+      "fp16_tflops": 260.91,
+      "fp32_tflops": 124.33,
+      "mixed_precision_tflops": 248.04,
+      "memory_bandwidth_gbs": 1380.93,
+      "power_consumption_watts": 497.55,
+      "temperature_centigrade": 71
+    }
+  },
+  {
+    "machine_id": 34282,
+    "host_id": 37070,
+    "quickmark_score": 225.13,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:26:22.374397Z",
+    "gpu_model": "NVIDIA A100-SXM4-40GB",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 95.44098961204517,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995981872479477760",
+    "aggregate_results": {
+      "bf16_tflops": 225.13,
+      "fp16_tflops": 217.98,
+      "fp32_tflops": 101.1,
+      "mixed_precision_tflops": 205.85,
+      "memory_bandwidth_gbs": 1384.37,
+      "power_consumption_watts": 321.69,
+      "temperature_centigrade": 57
+    }
   }
 ]
