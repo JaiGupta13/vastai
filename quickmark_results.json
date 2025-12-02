@@ -943,5 +943,26 @@
       "power_consumption_watts": 641.29,
       "temperature_centigrade": 56
     }
+  },
+  {
+    "machine_id": 45101,
+    "host_id": 332010,
+    "quickmark_score": 699.72,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T23:12:20.576103Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 292.0952909772129,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995993420308553728",
+    "aggregate_results": {
+      "bf16_tflops": 699.72,
+      "fp16_tflops": 662.55,
+      "fp32_tflops": 363.61,
+      "mixed_precision_tflops": 641.53,
+      "memory_bandwidth_gbs": 3022.26,
+      "power_consumption_watts": 655.34,
+      "temperature_centigrade": 57
+    }
   }
 ]

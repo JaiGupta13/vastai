@@ -626,6 +626,17 @@
             expandedData = expandToPerGpuDataPoints(datacenterData);
 
             groupedByModel = groupBy(expandedData, item => item.gpu_name);
+            
+            // Create combined A100 SXM4 group if both 40GB and 80GB variants exist
+            const a100_40gb = groupedByModel['A100 SXM4 40GB'];
+            const a100_80gb = groupedByModel['A100 SXM4 80GB'];
+            if (a100_40gb || a100_80gb) {
+                groupedByModel['A100 SXM4 (All)'] = [
+                    ...(a100_40gb || []),
+                    ...(a100_80gb || [])
+                ];
+            }
+            
             perModelSummaries = buildPerModelSummaries(groupedByModel);
 
             populateModelSelect(Object.keys(groupedByModel));
@@ -646,9 +657,22 @@
         }
 
         function normalizeRecord(item) {
+            // Determine GPU name with memory variant for A100 SXM4
+            let gpuName = (item.gpu_name || 'Unknown GPU').trim();
+            
+            // A100 SXM4 comes in 40GB and 80GB variants - distinguish by gpu_ram
+            if (gpuName === 'A100 SXM4' && item.gpu_ram != null) {
+                const ramGB = Math.round(item.gpu_ram / 1024);
+                if (ramGB <= 45) {
+                    gpuName = 'A100 SXM4 40GB';
+                } else {
+                    gpuName = 'A100 SXM4 80GB';
+                }
+            }
+            
             return {
                 ...item,
-                gpu_name: (item.gpu_name || 'Unknown GPU').trim(),
+                gpu_name: gpuName,
                 cpu_ram_gb: item.cpu_ram != null ? item.cpu_ram / 1024 : null,
                 listing_uptime_hours: item.duration != null ? item.duration / 3600 : null
             };
@@ -688,14 +712,14 @@
         }
 
         // Build quickmark entries directly from quickmark_results.json for a given GPU model
-        // Handles name mismatches: offers use "A100 SXM4" while quickmark uses "NVIDIA A100-SXM4-80GB"
+        // Handles name mismatches: offers use "A100 SXM4 40GB" while quickmark uses "NVIDIA A100-SXM4-40GB"
         function getQuickmarkEntriesForModel(modelName) {
             // Normalize model name for matching: extract key parts
-            // "A100 SXM4" -> "A100-SXM4"
-            // "NVIDIA A100-SXM4-80GB" -> "A100-SXM4"
+            // "A100 SXM4 40GB" -> "A100-SXM4-40"
+            // "NVIDIA A100-SXM4-80GB" -> "A100-SXM4-80"
             // "H100 SXM" -> "H100-SXM"
             // "NVIDIA H100 80GB HBM3" -> "H100-SXM" (HBM3 indicates SXM variant)
-            const normalizeForMatch = (name) => {
+            const normalizeForMatch = (name, includeMemory = true) => {
                 const upper = (name || '').toUpperCase();
                 const parts = [];
                 // Extract GPU family (A100, H100, H200, B200)
@@ -712,14 +736,30 @@
                 } else if (upper.includes('NVL')) {
                     parts.push('NVL');
                 }
+                // Extract memory size for A100 SXM4 variants (40GB vs 80GB)
+                if (includeMemory && parts[0] === 'A100' && parts[1] === 'SXM4') {
+                    if (upper.includes('40GB') || upper.includes('40 GB')) {
+                        parts.push('40');
+                    } else if (upper.includes('80GB') || upper.includes('80 GB')) {
+                        parts.push('80');
+                    }
+                }
                 return parts.join('-');
             };
             
-            const targetKey = normalizeForMatch(modelName);
+            // Handle combined A100 SXM4 (All) case
+            const isCombinedA100SXM4 = modelName === 'A100 SXM4 (All)';
+            
+            const targetKey = normalizeForMatch(modelName, !isCombinedA100SXM4);
             
             return quickmarkData
                 .filter(entry => {
-                    const entryKey = normalizeForMatch(entry.gpu_model);
+                    if (isCombinedA100SXM4) {
+                        // Match both 40GB and 80GB variants
+                        const entryKey = normalizeForMatch(entry.gpu_model, false);
+                        return entryKey === 'A100-SXM4';
+                    }
+                    const entryKey = normalizeForMatch(entry.gpu_model, true);
                     return entryKey === targetKey;
                 })
                 .map(entry => {
@@ -892,21 +932,48 @@
         function populateModelSelect(models) {
             const select = document.getElementById('gpu-model-select');
             select.innerHTML = '';
+            
+            // Custom sort order for A100 SXM4 variants
+            const getModelSortKey = (name) => {
+                // Put A100 SXM4 variants together in order: 40GB, 80GB, then (All)
+                if (name === 'A100 SXM4 40GB') return 'A100 SXM4 1';
+                if (name === 'A100 SXM4 80GB') return 'A100 SXM4 2';
+                if (name === 'A100 SXM4 (All)') return 'A100 SXM4 3';
+                return name;
+            };
+            
             const sortedModels = models
                 .map(name => {
                     const summary = perModelSummaries[name];
                     return { 
                         name, 
                         gpuCount: summary?.count || 0,
-                        instanceCount: summary?.uniqueInstances || 0 
+                        instanceCount: summary?.uniqueInstances || 0,
+                        sortKey: getModelSortKey(name)
                     };
                 })
-                .sort((a, b) => b.gpuCount - a.gpuCount);
+                .sort((a, b) => {
+                    // First sort by GPU count (descending), but keep A100 SXM4 variants grouped
+                    const aIsA100SXM4 = a.name.startsWith('A100 SXM4');
+                    const bIsA100SXM4 = b.name.startsWith('A100 SXM4');
+                    
+                    // If both are A100 SXM4 variants, sort by the custom key
+                    if (aIsA100SXM4 && bIsA100SXM4) {
+                        return a.sortKey.localeCompare(b.sortKey);
+                    }
+                    
+                    // Otherwise sort by GPU count
+                    return b.gpuCount - a.gpuCount;
+                });
 
             sortedModels.forEach(entry => {
                 const option = document.createElement('option');
                 option.value = entry.name;
-                option.textContent = `${entry.name} (${entry.gpuCount} GPUs from ${entry.instanceCount} instances)`;
+                // Mark combined entries
+                const label = entry.name.includes('(All)') 
+                    ? `${entry.name} (${entry.gpuCount} GPUs combined)`
+                    : `${entry.name} (${entry.gpuCount} GPUs from ${entry.instanceCount} instances)`;
+                option.textContent = label;
                 select.appendChild(option);
             });
 
