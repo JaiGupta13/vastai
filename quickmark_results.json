@@ -525,6 +525,27 @@
     }
   },
   {
+    "machine_id": 23948,
+    "host_id": 21357,
+    "quickmark_score": 0,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:00:00.000000Z",
+    "gpu_model": "",
+    "gpu_count": 0,
+    "dlperf_at_benchmark": 0,
+    "notes": "Error during benchmark - added to prevent rebenchmarking",
+    "siliconmark_job_id": "",
+    "aggregate_results": {
+      "bf16_tflops": 0,
+      "fp16_tflops": 0,
+      "fp32_tflops": 0,
+      "mixed_precision_tflops": 0,
+      "memory_bandwidth_gbs": 0,
+      "power_consumption_watts": 0,
+      "temperature_centigrade": 0
+    }
+  },
+  {
     "machine_id": 43416,
     "host_id": 94202,
     "quickmark_score": 265.8,
@@ -606,6 +627,321 @@
       "memory_bandwidth_gbs": 1384.37,
       "power_consumption_watts": 321.69,
       "temperature_centigrade": 57
+    }
+  },
+  {
+    "machine_id": 42437,
+    "host_id": 68137,
+    "quickmark_score": 698.89,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:43:15.775901Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 351.484853527725,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986398104133632",
+    "aggregate_results": {
+      "bf16_tflops": 698.89,
+      "fp16_tflops": 667.58,
+      "fp32_tflops": 363.55,
+      "mixed_precision_tflops": 639.03,
+      "memory_bandwidth_gbs": 3019.23,
+      "power_consumption_watts": 633.85,
+      "temperature_centigrade": 62
+    }
+  },
+  {
+    "machine_id": 25317,
+    "host_id": 21357,
+    "quickmark_score": 698.85,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:54:26.054304Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 268.54133640113395,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986399085600768",
+    "aggregate_results": {
+      "bf16_tflops": 698.85,
+      "fp16_tflops": 660.5,
+      "fp32_tflops": 359.73,
+      "mixed_precision_tflops": 633.55,
+      "memory_bandwidth_gbs": 2607.11,
+      "power_consumption_watts": 632.61,
+      "temperature_centigrade": 68
+    }
+  },
+  {
+    "machine_id": 47599,
+    "host_id": 148160,
+    "quickmark_score": 714,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:43:33.282687Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 321.45127443769496,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986397374324736",
+    "aggregate_results": {
+      "bf16_tflops": 714,
+      "fp16_tflops": 668.2,
+      "fp32_tflops": 364.69,
+      "mixed_precision_tflops": 640.2,
+      "memory_bandwidth_gbs": 2972.21,
+      "power_consumption_watts": 646.35,
+      "temperature_centigrade": 62
+    }
+  },
+  {
+    "machine_id": 38146,
+    "host_id": 125728,
+    "quickmark_score": 718.73,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:43:42.557774Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 345.8430672563535,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986398611644416",
+    "aggregate_results": {
+      "bf16_tflops": 718.73,
+      "fp16_tflops": 677.5,
+      "fp32_tflops": 364.14,
+      "mixed_precision_tflops": 648.36,
+      "memory_bandwidth_gbs": 2618.21,
+      "power_consumption_watts": 669.6,
+      "temperature_centigrade": 62
+    }
+  },
+  {
+    "machine_id": 28007,
+    "host_id": 125728,
+    "quickmark_score": 1373.58,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:44:25.368747Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 2,
+    "dlperf_at_benchmark": 691.2986748413183,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986395293949952",
+    "aggregate_results": {
+      "bf16_tflops": 1373.58,
+      "fp16_tflops": 1319.73,
+      "fp32_tflops": 686.25,
+      "mixed_precision_tflops": 1143.32,
+      "memory_bandwidth_gbs": 5228.02,
+      "power_consumption_watts": 1270.09,
+      "temperature_centigrade": 67
+    }
+  },
+  {
+    "machine_id": 32302,
+    "host_id": 169960,
+    "quickmark_score": 697.77,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:44:55.539195Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 345.41851146668097,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986398582284288",
+    "aggregate_results": {
+      "bf16_tflops": 697.77,
+      "fp16_tflops": 664.18,
+      "fp32_tflops": 358.47,
+      "mixed_precision_tflops": 625.42,
+      "memory_bandwidth_gbs": 2595.72,
+      "power_consumption_watts": 623.47,
+      "temperature_centigrade": 64
+    }
+  },
+  {
+    "machine_id": 27591,
+    "host_id": 317686,
+    "quickmark_score": 705.03,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:44:54.428514Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 304.42492953328605,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986398322237440",
+    "aggregate_results": {
+      "bf16_tflops": 705.03,
+      "fp16_tflops": 664.69,
+      "fp32_tflops": 364.95,
+      "mixed_precision_tflops": 637.75,
+      "memory_bandwidth_gbs": 2614.07,
+      "power_consumption_watts": 638.51,
+      "temperature_centigrade": 57
+    }
+  },
+  {
+    "machine_id": 40794,
+    "host_id": 288211,
+    "quickmark_score": 718.56,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:45:09.731814Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 363.30807776938184,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986399073017856",
+    "aggregate_results": {
+      "bf16_tflops": 718.56,
+      "fp16_tflops": 678.19,
+      "fp32_tflops": 365.45,
+      "mixed_precision_tflops": 644.67,
+      "memory_bandwidth_gbs": 3017.84,
+      "power_consumption_watts": 657.27,
+      "temperature_centigrade": 57
+    }
+  },
+  {
+    "machine_id": 49140,
+    "host_id": 68137,
+    "quickmark_score": 708.92,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:45:44.419137Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 358.71850422374223,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986398372569088",
+    "aggregate_results": {
+      "bf16_tflops": 708.92,
+      "fp16_tflops": 667.86,
+      "fp32_tflops": 368.18,
+      "mixed_precision_tflops": 641.28,
+      "memory_bandwidth_gbs": 3016.74,
+      "power_consumption_watts": 645.48,
+      "temperature_centigrade": 59
+    }
+  },
+  {
+    "machine_id": 26959,
+    "host_id": 145222,
+    "quickmark_score": 724.8,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:45:41.228066Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 319.61664475270777,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986397722451968",
+    "aggregate_results": {
+      "bf16_tflops": 724.8,
+      "fp16_tflops": 676.24,
+      "fp32_tflops": 361.54,
+      "mixed_precision_tflops": 639.06,
+      "memory_bandwidth_gbs": 2571.42,
+      "power_consumption_watts": 652.08,
+      "temperature_centigrade": 61
+    }
+  },
+  {
+    "machine_id": 47561,
+    "host_id": 152534,
+    "quickmark_score": 716.42,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:46:13.859726Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 321.28857625042883,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986398087356416",
+    "aggregate_results": {
+      "bf16_tflops": 716.42,
+      "fp16_tflops": 678.4,
+      "fp32_tflops": 365.36,
+      "mixed_precision_tflops": 643.4,
+      "memory_bandwidth_gbs": 3025.1,
+      "power_consumption_watts": 658.88,
+      "temperature_centigrade": 61
+    }
+  },
+  {
+    "machine_id": 33102,
+    "host_id": 169960,
+    "quickmark_score": 693.09,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:46:17.722808Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 345.25033387963964,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995986398292877312",
+    "aggregate_results": {
+      "bf16_tflops": 693.09,
+      "fp16_tflops": 656.46,
+      "fp32_tflops": 356.46,
+      "mixed_precision_tflops": 627.52,
+      "memory_bandwidth_gbs": 2584.19,
+      "power_consumption_watts": 617.17,
+      "temperature_centigrade": 66
+    }
+  },
+  {
+    "machine_id": 47601,
+    "host_id": 249256,
+    "quickmark_score": 722.1,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:50:38.970387Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 321.1120616378639,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995988132528529408",
+    "aggregate_results": {
+      "bf16_tflops": 722.1,
+      "fp16_tflops": 667.8,
+      "fp32_tflops": 369,
+      "mixed_precision_tflops": 642.42,
+      "memory_bandwidth_gbs": 3024.4,
+      "power_consumption_watts": 650.64,
+      "temperature_centigrade": 62
+    }
+  },
+  {
+    "machine_id": 45106,
+    "host_id": 332010,
+    "quickmark_score": 717.7,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T22:54:30.783000Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 300.39587595515695,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995989134489034752",
+    "aggregate_results": {
+      "bf16_tflops": 717.7,
+      "fp16_tflops": 673.36,
+      "fp32_tflops": 371.52,
+      "mixed_precision_tflops": 650.89,
+      "memory_bandwidth_gbs": 3023.72,
+      "power_consumption_watts": 652.57,
+      "temperature_centigrade": 59
+    }
+  },
+  {
+    "machine_id": 42643,
+    "host_id": 291034,
+    "quickmark_score": 707.11,
+    "score_metric": "bf16_tflops",
+    "measured_at": "2025-12-02T23:01:51.091532Z",
+    "gpu_model": "NVIDIA H100 80GB HBM3",
+    "gpu_count": 1,
+    "dlperf_at_benchmark": 257.78379550419066,
+    "notes": "Automated benchmark via run_quickmark_startup.sh (no SSH)",
+    "siliconmark_job_id": "1995989096278925312",
+    "aggregate_results": {
+      "bf16_tflops": 707.11,
+      "fp16_tflops": 667.95,
+      "fp32_tflops": 365.13,
+      "mixed_precision_tflops": 635.57,
+      "memory_bandwidth_gbs": 2615.77,
+      "power_consumption_watts": 641.29,
+      "temperature_centigrade": 56
     }
   }
 ]
