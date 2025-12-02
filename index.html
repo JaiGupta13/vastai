@@ -393,8 +393,8 @@
 
             <div class="grid-2">
                 <div class="chart-container">
-                    <h2 class="chart-title">SiliconMark Quickmark vs Per-GPU DLPerf</h2>
-                    <p class="chart-subtitle">Benchmark the exact machines you care about (run SiliconMark quickmark and append to quickmark_results.json).</p>
+                    <h2 class="chart-title">Per-GPU Quickmark Score vs Per-GPU DLPerf</h2>
+                    <p class="chart-subtitle">Quickmark scores are divided by GPU count. Benchmark machines by running SiliconMark quickmark and appending to quickmark_results.json.</p>
                     <div id="quickmark-placeholder" class="placeholder hidden">
                         No quickmark runs captured yet. Spin up the target host, run <code>quickmark quickmark</code>, store the score in <code>quickmark_results.json</code>, and shut the instance down when done.
                     </div>
@@ -431,7 +431,7 @@
                             <th>GPU Model</th>
                             <th>Quickmark Runs</th>
                             <th>Instance Coverage</th>
-                            <th>Avg Quickmark Score</th>
+                            <th>Avg Quickmark/GPU</th>
                         </tr>
                     </thead>
                     <tbody id="quickmark-coverage-table"></tbody>
@@ -739,6 +739,7 @@
             return {
                 ...entry,
                 quickmark_score: entry.quickmark_score != null ? Number(entry.quickmark_score) : null,
+                gpu_count: entry.gpu_count != null ? Number(entry.gpu_count) : 1,
                 measured_at: entry.measured_at || null
             };
         }
@@ -769,15 +770,20 @@
                         const quickmark = item.quickmark_entry;
                         if (!quickmark || quickmark.quickmark_score == null || isNaN(quickmark.quickmark_score)) return null;
                         // Ignore quickmark scores of 0 (benchmark didn't run properly)
-                        if (Number(quickmark.quickmark_score) === 0) return null;
+                        const rawScore = Number(quickmark.quickmark_score);
+                        if (rawScore === 0) return null;
+                        // Calculate per-GPU quickmark score using gpu_count from quickmark_results.json
+                        const numGpus = quickmark.gpu_count || 1;
+                        const scorePerGpu = rawScore / numGpus;
                         return {
-                            score: Number(quickmark.quickmark_score),
+                            score: scorePerGpu,
+                            raw_score: rawScore,
                             dlperf: item.dlperf,
                             machine_id: item.machine_id,
                             host_id: item.host_id,
                             measured_at: quickmark.measured_at,
                             notes: quickmark.notes || '',
-                            original_num_gpus: item.original_num_gpus
+                            gpu_count: numGpus
                         };
                     })
                     .filter(Boolean);
@@ -1252,7 +1258,9 @@
                 y: entry.dlperf,
                 machine: entry.machine_id,
                 host: entry.host_id,
-                measured_at: entry.measured_at
+                measured_at: entry.measured_at,
+                numGpus: entry.gpu_count,
+                rawScore: entry.raw_score
             }));
 
             const correlation = calculateCorrelation(pairs.map(p => p.x), pairs.map(p => p.y));
@@ -1275,7 +1283,7 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            title: { display: true, text: 'SiliconMark Quickmark Score' }
+                            title: { display: true, text: 'Quickmark Score per GPU' }
                         },
                         y: {
                             title: { display: true, text: 'Per-GPU DLPerf' }
@@ -1286,7 +1294,7 @@
                             callbacks: {
                                 label: context => {
                                     const data = context.raw;
-                                    return `Quickmark: ${data.x.toFixed(1)}, DLPerf/GPU: ${data.y.toFixed(1)}, machine ${data.machine}`;
+                                    return `Quickmark/GPU: ${data.x.toFixed(1)}, DLPerf/GPU: ${data.y.toFixed(1)}, machine ${data.machine} (${data.numGpus}x GPU)`;
                                 }
                             }
                         }
