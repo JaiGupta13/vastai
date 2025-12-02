@@ -374,24 +374,24 @@ log_step "Step 6: Parsing and Saving Results"
 # The final result is a multi-line pretty-printed JSON that starts with '{' alone on a line
 # (unlike the log lines which are single-line JSON like {"time":"...","level":"INFO",...})
 # Strategy: Find the standalone '{' that is followed by "benchmark_results" (the main result JSON)
-RESULT_JSON=$(echo "$BENCHMARK_OUTPUT" | python3 -c '
+RESULT_JSON=$(echo "$BENCHMARK_OUTPUT" | python3 -c "
 import sys
 lines = sys.stdin.readlines()
 
 # Find the line with QUICKMARK_BENCHMARK_COMPLETE to know where to stop
 marker_idx = None
 for i, line in enumerate(lines):
-    if "QUICKMARK_BENCHMARK_COMPLETE" in line:
+    if 'QUICKMARK_BENCHMARK_COMPLETE' in line:
         marker_idx = i
         break
 
-# Find the standalone { that is followed by "benchmark_results" (the main result JSON)
+# Find the standalone { that is followed by benchmark_results (the main result JSON)
 json_start = None
 for i in range(len(lines)):
     stripped = lines[i].strip()
     # Check if this is a standalone { (not part of single-line JSON)
-    if stripped == "{":
-        # Check if the next few lines contain "benchmark_results"
+    if stripped == '{':
+        # Check if the next few lines contain benchmark_results
         # Look ahead up to 3 lines
         for j in range(i + 1, min(i + 4, len(lines))):
             if 'benchmark_results' in lines[j]:
@@ -402,21 +402,21 @@ for i in range(len(lines)):
 
 if json_start is not None and marker_idx is not None:
     # Extract from json_start to marker_idx (exclusive)
-    print("".join(lines[json_start:marker_idx]), end="")
+    print(''.join(lines[json_start:marker_idx]), end='')
 elif json_start is not None:
     # No marker found, extract to end
-    print("".join(lines[json_start:]), end="")
+    print(''.join(lines[json_start:]), end='')
 else:
     # Fallback: find first standalone { before marker
     if marker_idx is not None:
         for i in range(marker_idx - 1, -1, -1):
             stripped = lines[i].strip()
-            if stripped == "{":
-                print("".join(lines[i:marker_idx]), end="")
+            if stripped == '{':
+                print(''.join(lines[i:marker_idx]), end='')
                 break
     else:
         sys.exit(1)
-')
+")
 
 if [[ -z "$RESULT_JSON" ]] || ! echo "$RESULT_JSON" | jq . > /dev/null 2>&1; then
     log_error "Could not parse benchmark results"
