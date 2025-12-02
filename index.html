@@ -394,7 +394,7 @@
             <div class="grid-2">
                 <div class="chart-container">
                     <h2 class="chart-title">Per-GPU Quickmark Score vs Per-GPU DLPerf</h2>
-                    <p class="chart-subtitle">Quickmark scores are divided by GPU count. Benchmark machines by running SiliconMark quickmark and appending to quickmark_results.json.</p>
+                    <p class="chart-subtitle" id="quickmark-subtitle">Quickmark scores are divided by GPU count. Benchmark machines by running SiliconMark quickmark and appending to quickmark_results.json.</p>
                     <div id="quickmark-placeholder" class="placeholder hidden">
                         No quickmark runs captured yet. Spin up the target host, run <code>quickmark quickmark</code>, store the score in <code>quickmark_results.json</code>, and shut the instance down when done.
                     </div>
@@ -420,22 +420,6 @@
                         <canvas id="gpu-model-chart"></canvas>
                     </div>
                 </div>
-            </div>
-
-            <div class="chart-container">
-                <h2 class="chart-title">Quickmark Coverage</h2>
-                <p class="chart-subtitle">Track how many benchmark runs exist per GPU model so we know where more sampling is needed.</p>
-                <table class="correlation-table">
-                    <thead>
-                        <tr>
-                            <th>GPU Model</th>
-                            <th>Quickmark Runs</th>
-                            <th>Instance Coverage</th>
-                            <th>Avg Quickmark/GPU</th>
-                        </tr>
-                    </thead>
-                    <tbody id="quickmark-coverage-table"></tbody>
-                </table>
             </div>
 
         </div>
@@ -621,12 +605,17 @@
             }
         })();
 
+        // Store quickmark data globally for direct access
+        let quickmarkData = [];
+
         function initializeDashboard(offers, quickmarks) {
-            const quickmarkMap = buildQuickmarkMap(quickmarks);
+            // Store quickmarks globally for direct use
+            quickmarkData = (quickmarks || []).filter(q => q && q.quickmark_score > 0);
+            
             datacenterData = offers
                 .filter(isDatacenterGpu)
                 .filter(item => item.dlperf != null && item.dlperf > 0)
-                .map(item => normalizeRecord(item, quickmarkMap));
+                .map(item => normalizeRecord(item));
 
             if (!datacenterData.length) {
                 document.getElementById('loading').innerHTML = 'No datacenter-class GPU offers found (A100/H100/H200/B200).';
@@ -640,7 +629,6 @@
             perModelSummaries = buildPerModelSummaries(groupedByModel);
 
             populateModelSelect(Object.keys(groupedByModel));
-            renderQuickmarkCoverageTable(perModelSummaries);
             createDistributionChart();
             createGpuLeaderboardChart();
 
@@ -657,14 +645,12 @@
             return DATACENTER_KEYWORDS.some(keyword => name.includes(keyword));
         }
 
-        function normalizeRecord(item, quickmarkMap) {
-            const quickmark = quickmarkMap.get(`machine-${item.machine_id}`) || null;
+        function normalizeRecord(item) {
             return {
                 ...item,
                 gpu_name: (item.gpu_name || 'Unknown GPU').trim(),
                 cpu_ram_gb: item.cpu_ram != null ? item.cpu_ram / 1024 : null,
-                listing_uptime_hours: item.duration != null ? item.duration / 3600 : null,
-                quickmark_entry: quickmark
+                listing_uptime_hours: item.duration != null ? item.duration / 3600 : null
             };
         }
 
@@ -701,25 +687,60 @@
             return expanded;
         }
 
-        function buildQuickmarkMap(entries) {
-            const map = new Map();
-            (entries || []).forEach(entry => {
-                if (!entry) return;
-                const normalized = normalizeQuickmarkEntry(entry);
-                if (entry.machine_id != null) {
-                    map.set(`machine-${entry.machine_id}`, normalized);
+        // Build quickmark entries directly from quickmark_results.json for a given GPU model
+        // Handles name mismatches: offers use "A100 SXM4" while quickmark uses "NVIDIA A100-SXM4-80GB"
+        function getQuickmarkEntriesForModel(modelName) {
+            // Normalize model name for matching: extract key parts
+            // "A100 SXM4" -> "A100-SXM4"
+            // "NVIDIA A100-SXM4-80GB" -> "A100-SXM4"
+            // "H100 SXM" -> "H100-SXM"
+            // "NVIDIA H100 80GB HBM3" -> "H100-SXM" (HBM3 indicates SXM variant)
+            const normalizeForMatch = (name) => {
+                const upper = (name || '').toUpperCase();
+                const parts = [];
+                // Extract GPU family (A100, H100, H200, B200)
+                const familyMatch = upper.match(/\b(A100|H100|H200|B200)\b/);
+                if (familyMatch) parts.push(familyMatch[1]);
+                // Extract variant (SXM4, SXM, PCIE, NVL)
+                // Note: "HBM3" in H100 names indicates SXM variant
+                if (upper.includes('SXM4')) {
+                    parts.push('SXM4');
+                } else if (upper.includes('SXM') || upper.includes('HBM3')) {
+                    parts.push('SXM');
+                } else if (upper.includes('PCIE') || upper.includes('PCIe')) {
+                    parts.push('PCIE');
+                } else if (upper.includes('NVL')) {
+                    parts.push('NVL');
                 }
-            });
-            return map;
-        }
-
-        function normalizeQuickmarkEntry(entry) {
-            return {
-                ...entry,
-                quickmark_score: entry.quickmark_score != null ? Number(entry.quickmark_score) : null,
-                gpu_count: entry.gpu_count != null ? Number(entry.gpu_count) : 1,
-                measured_at: entry.measured_at || null
+                return parts.join('-');
             };
+            
+            const targetKey = normalizeForMatch(modelName);
+            
+            return quickmarkData
+                .filter(entry => {
+                    const entryKey = normalizeForMatch(entry.gpu_model);
+                    return entryKey === targetKey;
+                })
+                .map(entry => {
+                    const rawScore = Number(entry.quickmark_score);
+                    const numGpus = entry.gpu_count || 1;
+                    const scorePerGpu = rawScore / numGpus;
+                    // Use dlperf_at_benchmark from quickmark_results.json, scaled per GPU
+                    const dlperfAtBenchmark = entry.dlperf_at_benchmark != null ? Number(entry.dlperf_at_benchmark) : null;
+                    const dlperfPerGpu = dlperfAtBenchmark != null ? dlperfAtBenchmark / numGpus : null;
+                    return {
+                        score: scorePerGpu,
+                        raw_score: rawScore,
+                        dlperf: dlperfPerGpu,
+                        machine_id: entry.machine_id,
+                        host_id: entry.host_id,
+                        measured_at: entry.measured_at,
+                        notes: entry.notes || '',
+                        gpu_count: numGpus
+                    };
+                })
+                .filter(entry => entry.dlperf != null && entry.dlperf > 0);
         }
 
         function groupBy(array, fn) {
@@ -738,33 +759,8 @@
                 const dlperfValues = dataset.map(item => item.dlperf);
                 const priceValues = dataset.map(item => item.dph_per_gpu).filter(isFinite);
                 
-                // For quickmark, we only count unique machines (not expanded)
-                // Group by machine_id to get unique entries
-                const seenMachines = new Set();
-                const quickmarkEntries = dataset
-                    .map(item => {
-                        if (seenMachines.has(item.machine_id)) return null;
-                        seenMachines.add(item.machine_id);
-                        const quickmark = item.quickmark_entry;
-                        if (!quickmark || quickmark.quickmark_score == null || isNaN(quickmark.quickmark_score)) return null;
-                        // Ignore quickmark scores of 0 (benchmark didn't run properly)
-                        const rawScore = Number(quickmark.quickmark_score);
-                        if (rawScore === 0) return null;
-                        // Calculate per-GPU quickmark score using gpu_count from quickmark_results.json
-                        const numGpus = quickmark.gpu_count || 1;
-                        const scorePerGpu = rawScore / numGpus;
-                        return {
-                            score: scorePerGpu,
-                            raw_score: rawScore,
-                            dlperf: item.dlperf,
-                            machine_id: item.machine_id,
-                            host_id: item.host_id,
-                            measured_at: quickmark.measured_at,
-                            notes: quickmark.notes || '',
-                            gpu_count: numGpus
-                        };
-                    })
-                    .filter(Boolean);
+                // Get quickmark entries directly from quickmark_results.json
+                const quickmarkEntries = getQuickmarkEntriesForModel(model);
 
                 // Count unique instances (not expanded GPUs) for coverage stats
                 const uniqueMachineIds = new Set(dataset.map(item => item.machine_id));
@@ -1215,8 +1211,15 @@
         function renderQuickmarkChart(entries) {
             const placeholder = document.getElementById('quickmark-placeholder');
             const wrapper = document.getElementById('quickmark-chart-wrapper');
+            const subtitle = document.getElementById('quickmark-subtitle');
             const canvasId = 'quickmark-chart';
             const canvas = document.getElementById(canvasId);
+
+            // Update subtitle with count
+            const count = entries.length;
+            subtitle.textContent = count > 0 
+                ? `${count} quickmark data point${count !== 1 ? 's' : ''} for this model. Scores divided by GPU count.`
+                : 'No quickmark data for this model yet.';
 
             if (!entries.length) {
                 placeholder.classList.remove('hidden');
@@ -1249,7 +1252,7 @@
                 type: 'scatter',
                 data: {
                     datasets: [{
-                        label: `Corr: ${safeToFixed(correlation, 3)}`,
+                        label: `Corr: ${safeToFixed(correlation, 3)} (n=${count})`,
                         data: pairs,
                         backgroundColor: 'rgba(16, 185, 129, 0.7)',
                         borderColor: 'rgba(16, 185, 129, 1)',
@@ -1264,7 +1267,7 @@
                             title: { display: true, text: 'Quickmark Score per GPU' }
                         },
                         y: {
-                            title: { display: true, text: 'Per-GPU DLPerf' }
+                            title: { display: true, text: 'Per-GPU DLPerf (at benchmark time)' }
                         }
                     },
                     plugins: {
@@ -1400,43 +1403,6 @@
                     interaction: { mode: 'index', intersect: false }
                 }
             });
-        }
-
-        function renderQuickmarkCoverageTable(summaries) {
-            const tbody = document.getElementById('quickmark-coverage-table');
-            tbody.innerHTML = '';
-
-            const rows = Object.entries(summaries)
-                .map(([model, summary]) => {
-                    return {
-                        model,
-                        label: model,
-                        runs: summary.quickmarkEntries.length,
-                        totalInstances: summary.uniqueInstances,
-                        totalGpus: summary.count,
-                        avgScore: summary.quickmarkStats.avg
-                    };
-                })
-                .sort((a, b) => b.runs - a.runs);
-
-            rows.forEach(row => {
-                const coverage = row.totalInstances ? `${((row.runs / row.totalInstances) * 100).toFixed(0)}%` : '0%';
-                const displayScore = row.runs ? formatNumber(row.avgScore) : '—';
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${row.label}</td>
-                    <td>${row.runs}</td>
-                    <td>${row.runs}/${row.totalInstances} instances (${coverage})</td>
-                    <td>${displayScore}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            if (!rows.some(row => row.runs > 0)) {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="4">No quickmark data yet. Run SiliconMark quickmark on your shortlist and append the results.</td>';
-                tbody.appendChild(row);
-            }
         }
 
         function formatNumber(value, decimals = 1) {
