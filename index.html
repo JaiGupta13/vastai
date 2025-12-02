@@ -464,7 +464,34 @@
         let currentCorrelations = null;
         const charts = {};
         let availableJsonFiles = [];
-        let selectedJsonFile = 'offers.json';
+        let selectedJsonFile = null; // Will be set to latest file by date
+
+        // Parse date from filename like offers_12-02-25.json or offers-12-01-25.json
+        function parseDateFromFilename(filename) {
+            // Match patterns like offers_MM-DD-YY.json or offers-MM-DD-YY.json
+            const match = filename.match(/offers[_-](\d{2})-(\d{2})-(\d{2})\.json$/);
+            if (match) {
+                const month = parseInt(match[1], 10);
+                const day = parseInt(match[2], 10);
+                const year = 2000 + parseInt(match[3], 10); // Convert YY to YYYY
+                return new Date(year, month - 1, day);
+            }
+            return null;
+        }
+
+        // Sort files by date (newest first) and return sorted list
+        function sortFilesByDate(files) {
+            return files.sort((a, b) => {
+                const dateA = parseDateFromFilename(a);
+                const dateB = parseDateFromFilename(b);
+                // Files with dates come first, sorted newest to oldest
+                if (dateA && dateB) return dateB - dateA;
+                if (dateA) return -1;
+                if (dateB) return 1;
+                // Non-dated files sorted alphabetically
+                return a.localeCompare(b);
+            });
+        }
 
         // Discover JSON files in the directory
         async function discoverJsonFiles() {
@@ -475,105 +502,58 @@
                 const manifestResponse = await fetch('files.json');
                 if (manifestResponse.ok) {
                     const manifest = await manifestResponse.json();
-                    if (Array.isArray(manifest.files)) {
+                    if (Array.isArray(manifest.files) && manifest.files.length > 0) {
                         manifest.files.forEach(file => {
                             if (file.endsWith('.json') && file !== 'quickmark_results.json' && file !== 'files.json') {
                                 discoveredFiles.add(file);
                             }
                         });
+                        // Manifest found with files - skip probing
+                        return sortFilesByDate(Array.from(discoveredFiles));
                     }
                 }
             } catch (e) {
                 // No manifest file, continue with pattern discovery
             }
             
-            // Common known patterns
-            const commonPatterns = [
-                'offers.json',
-                'offers_old.json',
-                'offers-12-01-25.json'
-            ];
-            
-            // Try common patterns
-            for (const pattern of commonPatterns) {
-                try {
-                    let response = await fetch(pattern, { method: 'HEAD' });
-                    // If HEAD fails, try GET with range to check file existence
-                    if (!response.ok) {
-                        response = await fetch(pattern, { 
-                            headers: { 'Range': 'bytes=0-0' }
-                        });
-                    }
-                    if (response.ok || response.status === 206) {
-                        discoveredFiles.add(pattern);
-                    }
-                } catch (e) {
-                    // File doesn't exist or can't be checked
-                }
-            }
-            
-            // Try date-based patterns for recent files (last 30 days)
+            // Fallback: probe for date-based patterns (last 7 days)
+            // Pattern: offers_MM-DD-YY.json or offers-MM-DD-YY.json
             const currentDate = new Date();
-            for (let daysAgo = 0; daysAgo < 30; daysAgo++) {
+            const checkPromises = [];
+            
+            for (let daysAgo = 0; daysAgo < 7; daysAgo++) {
                 const checkDate = new Date(currentDate);
                 checkDate.setDate(checkDate.getDate() - daysAgo);
-                const year = checkDate.getFullYear();
                 const month = String(checkDate.getMonth() + 1).padStart(2, '0');
                 const day = String(checkDate.getDate()).padStart(2, '0');
-                const yearShort = String(year).slice(-2);
+                const yearShort = String(checkDate.getFullYear()).slice(-2);
                 
                 const datePatterns = [
-                    `offers-${year}-${month}-${day}.json`,
-                    `offers-${month}-${day}-${yearShort}.json`,
-                    `offers_${year}${month}${day}.json`,
-                    `offers-${yearShort}-${month}-${day}.json`
+                    `offers_${month}-${day}-${yearShort}.json`,
+                    `offers-${month}-${day}-${yearShort}.json`
                 ];
                 
                 for (const pattern of datePatterns) {
-                    if (!discoveredFiles.has(pattern)) {
-                        try {
-                            let response = await fetch(pattern, { method: 'HEAD' });
-                            if (!response.ok) {
-                                response = await fetch(pattern, { 
-                                    headers: { 'Range': 'bytes=0-0' }
-                                });
-                            }
-                            if (response.ok || response.status === 206) {
-                                discoveredFiles.add(pattern);
-                            }
-                        } catch (e) {
-                            // File doesn't exist
-                        }
-                    }
+                    checkPromises.push(
+                        fetch(pattern, { method: 'HEAD' })
+                            .then(response => response.ok ? pattern : null)
+                            .catch(() => null)
+                    );
                 }
             }
             
-            // Try numbered patterns (offers-1.json, offers-2.json, etc.)
-            for (let i = 1; i <= 10; i++) {
-                const pattern = `offers-${i}.json`;
-                if (!discoveredFiles.has(pattern)) {
-                    try {
-                        let response = await fetch(pattern, { method: 'HEAD' });
-                        if (!response.ok) {
-                            response = await fetch(pattern, { 
-                                headers: { 'Range': 'bytes=0-0' }
-                            });
-                        }
-                        if (response.ok || response.status === 206) {
-                            discoveredFiles.add(pattern);
-                        }
-                    } catch (e) {
-                        // File doesn't exist
-                    }
-                }
-            }
+            // Check all patterns in parallel for faster loading
+            const results = await Promise.all(checkPromises);
+            results.forEach(pattern => {
+                if (pattern) discoveredFiles.add(pattern);
+            });
             
-            // If no files found, default to offers.json (will show error if it doesn't exist)
+            // If no files found, show error
             if (discoveredFiles.size === 0) {
-                discoveredFiles.add('offers.json');
+                return [];
             }
             
-            return Array.from(discoveredFiles).sort();
+            return sortFilesByDate(Array.from(discoveredFiles));
         }
 
         // Populate JSON file selector
@@ -622,20 +602,18 @@
             }
         }
 
-        // Initialize: discover JSON files and load default
+        // Initialize: discover JSON files and load latest by date
         (async () => {
             try {
                 availableJsonFiles = await discoverJsonFiles();
-                populateJsonFileSelect(availableJsonFiles);
                 
-                // Load the selected file (or default to first available)
-                if (availableJsonFiles.includes(selectedJsonFile)) {
-                    await loadDataFile(selectedJsonFile);
-                } else if (availableJsonFiles.length > 0) {
+                if (availableJsonFiles.length > 0) {
+                    // Select the latest file (first in sorted list, newest first)
                     selectedJsonFile = availableJsonFiles[0];
+                    populateJsonFileSelect(availableJsonFiles);
                     await loadDataFile(selectedJsonFile);
                 } else {
-                    document.getElementById('loading').innerHTML = 'No JSON data files found.';
+                    document.getElementById('loading').innerHTML = 'No offers JSON files found. Expected format: offers_MM-DD-YY.json';
                 }
             } catch (error) {
                 console.error('Error initializing:', error);
